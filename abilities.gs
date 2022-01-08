@@ -28,23 +28,25 @@ class Ability {
   let stunOnDeath = new Ability("setup", "onDeath", stunOnDeathEffect, "On death, the attacker is stunned (loses all range and it's ability) unil it takes a hit", 13)
   let zombie = new Ability("Zombie", "onBuff", zombieEffect, "When buffed, converts all units into zombies. Gains +2 strength and health per converted", 14)
   //15
-  let sniper = new Ability("sniper", "onAttack", sniperEffect, "When attacking, deals full damage to the farthes unit in your range, but half damage to the closest.", 15)
+  let sniper = new Ability("sniper", "onAttack", sniperEffect, "When attacking, deals full damage to the farthest unit in your range, but half damage to the closest.", 15)
   let niceZombie = new Ability("nice zombie ;)", "onBattleStart", niceZombieEffect, "Before battle, has a strength stat equal to half the health of your opponents highest health unit.", 16)
   let buffAllOnBuff = new Ability("strength chain", "onBuff", buffAllOnBuffEffect, "On buff,  lose that buff but buff all units without this ability with 1 strength", 17)
   let summoner = new Ability("summoner", "onDeath", summonerEffect, "On death, summons a copy of the opponent with 15 health in the 5th column", 18)
   let offensiveBuffer = new Ability("monkey bootleg", "onTurnEnd", offensiveBufferEffect, "On turn end, give the unit ahead +2 strength and speed if it has <15 of that stat respectively", 19)
   //20
   let doubleStats = new Ability("big boi", "stats", doubleStatsEffect, "has 2x the stats it normally would have", 20)
-  let vampire = new Ability("vampire", "onHurt", vampireEffect, "When hurt, get back 1/5 of the health you lost (rounded down) then become a bat.", 21)
+  let vampire = new Ability("vampire", "onHurt", vampireEffect, "When hurt, get back 1/2 of the health you lost (rounded down) then become a bat.", 21)
+  let soulEater = new Ability ("soul eater?", "onKO", soulEaterEffect, "After KOing a unit, gain their soul. Before attacking release that soul, dealing the strength of the KO'ed enemy to your opponents first unit", 22)
   //List of all abilities that can be found in the shop
-  var shopAbilities = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, swapOnBattleStart, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, buffAllOnBuff, summoner, offensiveBuffer, doubleStats, vampire]
+  var shopAbilities = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, swapOnBattleStart, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, buffAllOnBuff, summoner, offensiveBuffer, doubleStats, vampire, soulEater]
   //Other Abilities 
   var noAbility = new Ability ("Already Sold","never", doNothing, "does nothing", shopAbilities.length)
   let strengthDebuffOnDeathS2 = new Ability("no more strength", "onDeath", strengthDebuffOnDeathEffectS2, "\n- Has 1 health \n- On Death, debuffs all enemy strength stats by 25%", shopAbilities.length + 1)
   let stunned = new Ability("stunned :(", "onHurt", stunnedEffect, "Stunned: has a range of 0 until hit.", shopAbilities.length + 2)
   let doubleStatsFake = new Ability("big boi", "never", doNothing, "has 2x the stats it normally would have", shopAbilities.length + 3)
-  let bat = new Ability("bat", "onHurt", batEffect, "When damaged deal 1 damage to all units then become a vampire.", shopAbilities.length + 4)
-let otherAbilities = [noAbility, strengthDebuffOnDeathS2, stunned, doubleStatsFake, bat]
+  let bat = new Ability("bat", "onHurt", batEffect, "When damaged deal 1/2 the damage you took to all units then become a vampire.", shopAbilities.length + 4)
+  let soulRelease = new Ability ("soul eater?", "onAttack", soulReleaseEffect, "Before attacking deal the strength of the last enemy you KO'ed to your opponents first unit", shopAbilities.length + 5)
+let otherAbilities = [noAbility, strengthDebuffOnDeathS2, stunned, doubleStatsFake, bat, soulRelease]
 let abilities = shopAbilities.concat(otherAbilities)
 
 //All ability functions
@@ -341,21 +343,34 @@ function doubleStatsEffect(unitType) {
   unitType.ability = doubleStatsFake
 }
 function vampireEffect(unit, amount) {
-  unit.buff("health", Math.floor(amount/5))
+  unit.buff("health", Math.floor(amount/2))
   unit.ability = bat
   unit.name = "bat"
 }
-function batEffect(unit) {
+function batEffect(unit, amount) {
   unit.ability = vampire
   if (unit.health > 0){
     for (let player of game.players){
       for (let otherUnit of player.units) {
         if (otherUnit != unit) {
-          otherUnit.takeDamage(1)
+          otherUnit.takeDamage(amount/2)
         }
       }
     }
   }
   unit.name = "vampire"
+}
+
+function soulEaterEffect (unit, target) {
+  let name = target.damage
+  unit.ability = soulRelease
+  unit.ability.name = name.toString()
+}
+function soulReleaseEffect(unit) {
+  let damage =  parseInt(unit.ability.name)
+  let otherUnit = game.players[unit.player.number % 2].units[0]
+  unit.ability = soulEater
+  otherUnit.takeDamage(damage)
+
 }
 
