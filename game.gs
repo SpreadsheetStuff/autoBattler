@@ -1,14 +1,3 @@
-//Sheets
-var player1ActiveSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Player 1/Red")
-var player2ActiveSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Player 2/Blue")
-var field = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Field Thing")
-var gameInfo = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Misc Game Info")
-//Ui and properties
-var ui = SpreadsheetApp.getUi()
-var properties = PropertiesService.getScriptProperties()
-//Stopwatch
-var stopwatch = new Stopwatch ()
-
 class Game  {
   constructor (players, shops) {
     this.players = players
@@ -198,13 +187,6 @@ class Game  {
 
   
 }
-//Players
-var player1 = new Player(player1ActiveSheet, 1, p1Shop)
-var player2 = new Player(player2ActiveSheet, 2, p2Shop)
-var players = [player1, player2]
-
-var game = new Game(players, [p1Shop, p2Shop])
-
 //Turn End
 function endTurn() {
   saveOrLoadPlayersReady(false)
