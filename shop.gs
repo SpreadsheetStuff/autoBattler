@@ -17,7 +17,7 @@ class Shop {
       let createStats = (a1, a2, a3) => a1.map((a, i) => Math.round(a/a3 * 10) + a2[i]) 
       for (let i = 0; i < 5; i++) {
         ability = this.abilityPool[Math.floor(Math.random() * this.abilityPool.length)]
-        while (this.unitTypes.map(a => a.ability).indexOf(ability) > - 1) {
+        while (this.unitTypes.map(a => a.ability.name).indexOf(ability.name) > - 1) {
           ability = this.abilityPool[Math.floor(Math.random() * this.abilityPool.length)]
         }
         let stats = [Math.random(), Math.random(), Math.random()/2, Math.random()/2]
