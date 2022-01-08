@@ -9,36 +9,41 @@ class Ability {
   }
 }
 // Ability objects
+  //0
   let speedBuffOnBuy = new Ability("Sanic", "onBuy", speedBuffEffect, "When bought, buffs all other units with + 3 speed!", 0)
   let strengthDebuffOnDeathS1 = new Ability("no more strength","stats", strengthDebuffOnDeathEffectS1, "", 1)
   let debuffImmunity = new Ability('"Situational"', "onDebuff", disableDebuff, "Can't be debuffed", 2)
   let debuffOnOutsped = new Ability("No more speed", "onHurt", debuffOnOutspedEffect, "When hit by a faster unit, gains 2 strength and that unit loses its speed.",3)
   let copyStatsFromBehind = new Ability("Clone", "onAttack", copyStatsFromBehindEffect, "Before attacking copies the strength, speed and range from the unit behind it.", 4)
+  //5
   let stealStatsOnKO = new Ability("budget sweeper", "onKO", stealStatsOnKOEffect, "After KOing an enemy gain 1/2 of their strength and speed.", 5)
   let swapOnBattleStart = new Ability("Annoying thing", "onBattleStart", statYoinkEffect, "At the start of each battle copies an opponent's unit that is in the mirrored column as this.", 6)
   let healthBuffAllOnTurnEnd = new Ability("free health", "onTurnEnd", healthBuffAllEffect, "At the end of each turn buffs all units, without this ability, by 2 health.", 7)
   let reactivateOnBuysOnSell = new Ability("I can't name things", "onSell", reactivateOnBuysOnSellEffect, 'When deleted, activates all "When bought" abilities of your other units.', 8)
   let yoinkRangeOnBuy = new Ability("Balanced", "onBuy", yoinkRangeOnBuyEffect, "When bought steals all other units' range stats and converts them to strength.", 9)
+  //10
   let extraBuffs = new Ability("hmmmmmmm", "onOtherBuff" , extraBuffsEffect, "When a unit is buffed give +1 of the stat it was buffed in.", 10)
   let generalBuffs = new Ability("free range :)", "onBuy", generalBuffsEffect, "On buy, buff all other units by one of each stat.", 11)
   let stealBuffs = new Ability("hmm part 2", "onOtherBuff", stealBuffsEffect, "When another team member is buffed in a stat other than health steal half of that buff.", 12)
   let stunOnDeath = new Ability("setup", "onDeath", stunOnDeathEffect, "On death, the attacker is stunned (loses all range and it's ability) unil it takes a hit", 13)
-  let zombie = new Ability("Zombie", "onBuff", zombieEffect, "When buffed, converts all units into zombies. Gains +1 strength and health per converted", 14)
-  let archer = new Ability("sniper", "onAttack", archerEffect, "Does full damage to all units.", 15)
+  let zombie = new Ability("Zombie", "onBuff", zombieEffect, "When buffed, converts all units into zombies. Gains +2 strength and health per converted", 14)
+  //15
+  let sniper = new Ability("sniper", "onAttack", sniperEffect, "When attacking, deals full damage to the farthes unit in your range, but half damage to the closest.", 15)
   let niceZombie = new Ability("nice zombie ;)", "onBattleStart", niceZombieEffect, "Before battle, has a strength stat equal to half the health of your opponents highest health unit.", 16)
   let buffAllOnBuff = new Ability("strength chain", "onBuff", buffAllOnBuffEffect, "On buff,  lose that buff but buff all units without this ability with 1 strength", 17)
   let summoner = new Ability("summoner", "onDeath", summonerEffect, "On death, summons a copy of the opponent with 15 health in the 5th column", 18)
-  let offensiveBuffer = new Ability("monkey bootleg", "onTurnEnd", offensiveBufferEffect, "On turn end, give the unit ahead +2/1 strength and speed if it has <15/<30 of that stat respectively", 19)
+  let offensiveBuffer = new Ability("monkey bootleg", "onTurnEnd", offensiveBufferEffect, "On turn end, give the unit ahead +2 strength and speed if it has <15 of that stat respectively", 19)
+  //20
   let doubleStats = new Ability("big boi", "stats", doubleStatsEffect, "has 2x the stats it normally would have", 20)
-  let vampire = new Ability("vampire", "onAttack", vampireEffect, "Before attacking gain 3 health then become a bat.", 21)
+  let vampire = new Ability("vampire", "onHurt", vampireEffect, "When hurt, get back 1/5 of the health you lost (rounded down) then become a bat.", 21)
   //List of all abilities that can be found in the shop
-  var shopAbilities = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, swapOnBattleStart, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, archer, niceZombie, buffAllOnBuff, summoner, offensiveBuffer, doubleStats, vampire]
+  var shopAbilities = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, swapOnBattleStart, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, buffAllOnBuff, summoner, offensiveBuffer, doubleStats, vampire]
   //Other Abilities 
   var noAbility = new Ability ("Already Sold","never", doNothing, "does nothing", shopAbilities.length)
   let strengthDebuffOnDeathS2 = new Ability("no more strength", "onDeath", strengthDebuffOnDeathEffectS2, "\n- Has 1 health \n- On Death, debuffs all enemy strength stats by 25%", shopAbilities.length + 1)
   let stunned = new Ability("stunned :(", "onHurt", stunnedEffect, "Stunned: has a range of 0 until hit.", shopAbilities.length + 2)
   let doubleStatsFake = new Ability("big boi", "never", doNothing, "has 2x the stats it normally would have", shopAbilities.length + 3)
-  let bat = new Ability("bat", "onAttack", batEffect, "Before attacking deal 1 damage to all units then become a vampire.", shopAbilities.length + 4)
+  let bat = new Ability("bat", "onHurt", batEffect, "When damaged deal 1 damage to all units then become a vampire.", shopAbilities.length + 4)
 let otherAbilities = [noAbility, strengthDebuffOnDeathS2, stunned, doubleStatsFake, bat]
 let abilities = shopAbilities.concat(otherAbilities)
 
@@ -46,6 +51,9 @@ let abilities = shopAbilities.concat(otherAbilities)
 function doNothing() {
   //ui.alert("This Does Nothing")
 }
+
+
+
 //Id: 0
 function speedBuffEffect(unit) {
   unit.update("yay")
@@ -67,10 +75,6 @@ function strengthDebuffOnDeathEffectS2(unit) {
     unit.buff("damage", -unit.damage/4)
   }
   field.getRange("a1").getValue()
-  stopwatch.sleep(0.5)
-  for (let unit of units) {
-    unit.update()
-  }
 }
 function disableDebuff() {
   return true
@@ -103,6 +107,9 @@ function copyStatsFromBehindEffect(unit) {
     unit.damage = unitBehind.damage
   }
 }
+
+
+
 //Id:5
 function stealStatsOnKOEffect (unit, target) {
   unit.buff("damage",target.damage/2)
@@ -156,6 +163,9 @@ function yoinkRangeOnBuyEffect (unit) {
   }
   unit.buff("damage", yoinked)
 }
+
+
+
 //Id: 10
 function extraBuffsEffect(stat, amount, unit) {
   switch (stat) {
@@ -189,7 +199,7 @@ function generalBuffsEffect(unit) {
   field.getRange("a1").getValues()
 }
 function stealBuffsEffect (stat, amount, otherUnit, unit) {
-  if (stat == "health") {
+  if (stat == "health" || otherUnit.ability == buffAllOnBuff) {
     return
   }
   let multiplier = 1
@@ -240,24 +250,28 @@ function zombieEffect(a, b, unit) {
   if (summoned > 0){
     for (let unit2 of player.units) {
       if (unit2.ability == unit.ability) {
-        unit2.health += summoned
-        unit2.damage += summoned
+        unit2.health += summoned * 2
+        unit2.damage += summoned * 2
       }
     }
   }
 }
-//Id: 15
-function archerEffect(unit, targets) {
-  //Deals full damage - the amount each unit would normally take
-  let temporaryDamage = unit.damage
-  for (let target of targets) {
 
-    //Math.floor because take damage uses the ceil
-    target.health -= Math.floor(unit.damage - temporaryDamage)
-    temporaryDamage /= 2
+
+
+//Id: 15
+function sniperEffect(unit, targets) {
+  if (targets.length == 0) {
+    return
   }
+  //Select furthest target then damage them
+  let target = targets[targets.length - 1]
+  target.takeDamage(unit.damage)
+  //heal target that would normally get hit so in net it take 50% less damage
+  let target2 = targets[0]
+  target2.health += Math.ceil(unit.damage/2)
 }
-function niceZombieEffect () {
+function niceZombieEffect (unit) {
   let opponent = game.players[unit.player.number % 2]
   if (opponent.units.length == 0) {
     return
@@ -287,7 +301,7 @@ function summonerEffect(unit) {
   } else {
     var column = 10
   }
-  if (player.findUnit(column)) {
+  if (player.units.length > 5) {
     return
   }
   let opponent = game.players[unit.player.number % 2].units[0]
@@ -309,16 +323,15 @@ function offensiveBufferEffect(unit) {
   let unitAhead = units[inFrontId]
   if (unitAhead.speed < 15) {
     unitAhead.buff("speed", 2)
-  } else if (unitAhead.speed < 30){
-    unitAhead.buff("speed", 1)
   }
   if (unitAhead.damage < 15) {
     unitAhead.buff("damage", 2)
-  } else if (unitAhead.damage < 30){
-    unitAhead.buff("damage", 1)
   }
   unitAhead.update("buffed:)")
 }
+
+
+
 //Id:20
 function doubleStatsEffect(unitType) {
   unitType.baseHealth = unitType.baseHealth * 2
@@ -327,18 +340,22 @@ function doubleStatsEffect(unitType) {
   unitType.baseRange = unitType.baseRange * 2
   unitType.ability = doubleStatsFake
 }
-function vampireEffect(unit) {
-  unit.buff("health", 3)
+function vampireEffect(unit, amount) {
+  unit.buff("health", Math.floor(amount/5))
   unit.ability = bat
   unit.name = "bat"
 }
 function batEffect(unit) {
-  for (let player of game.players){
-    for (let unit of player.units) {
-      unit.takeDamage(1)
+  unit.ability = vampire
+  if (unit.health > 0){
+    for (let player of game.players){
+      for (let otherUnit of player.units) {
+        if (otherUnit != unit) {
+          otherUnit.takeDamage(1)
+        }
+      }
     }
   }
-  unit.ability = vampire
   unit.name = "vampire"
 }
 
