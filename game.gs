@@ -196,8 +196,9 @@ function endTurn() {
   if (otherPlayer.ready == false) {
     saveOrLoadPlayersReady(true)
     ui.alert("Turn Ended", "However, Player " + otherPlayer.number + " still needs to end their turn!", ui.ButtonSet.OK)
+    setOrGetWinner("e")
     let previousValue = setOrGetWinner()
-    while (setOrGetWinner() == previousValue) {}
+    while (setOrGetWinner() == previousValue) {Logger.log(setOrGetWinner())}
     if (!properties.getProperty("players ready")) {
       return
     }

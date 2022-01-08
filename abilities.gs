@@ -30,22 +30,23 @@ class Ability {
   //15
   let sniper = new Ability("sniper", "onAttack", sniperEffect, "When attacking, deals full damage to the farthest unit in your range, but half damage to the closest.", 15)
   let niceZombie = new Ability("nice zombie ;)", "onBattleStart", niceZombieEffect, "Before battle, has a strength stat equal to half the health of your opponents highest health unit.", 16)
-  let buffAllOnBuff = new Ability("strength chain", "onBuff", buffAllOnBuffEffect, "On buff,  lose that buff but buff all units without this ability with 1 strength", 17)
+  let freeStrength = new Ability("free strength", "onBuff", freeStrengthEffect, "On buff,  lose that buff but buff the left-most unit (unless this is the left-most) with this ability with 1 strength", 17)
   let summoner = new Ability("summoner", "onDeath", summonerEffect, "On death, summons a copy of the opponent with 15 health in the 5th column", 18)
   let offensiveBuffer = new Ability("monkey bootleg", "onTurnEnd", offensiveBufferEffect, "On turn end, give the unit ahead +2 strength and speed if it has <15 of that stat respectively", 19)
   //20
   let doubleStats = new Ability("big boi", "stats", doubleStatsEffect, "has 2x the stats it normally would have", 20)
   let vampire = new Ability("vampire", "onHurt", vampireEffect, "When hurt, get back 1/2 of the health you lost (rounded down) then become a bat.", 21)
-  let soulEater = new Ability ("soul eater?", "onKO", soulEaterEffect, "After KOing a unit, gain their soul. Before attacking release that soul, dealing the strength of the KO'ed enemy to your opponents first unit", 22)
+  let soulEater = new Ability ("soul eater?", "onKO", soulEaterEffect, "After KOing a unit, gain their soul. Before attacking release that soul, dealing half the strength of the KO'ed enemy to your opponents first unit", 22)
+  let buy1Get1Free = new Ability("buy one get 2", "onBuy", buy1Get1FreeEffect, "When bought, lets you buy another unit", 23)
   //List of all abilities that can be found in the shop
-  var shopAbilities = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, swapOnBattleStart, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, buffAllOnBuff, summoner, offensiveBuffer, doubleStats, vampire, soulEater]
+  var shopAbilities = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, swapOnBattleStart, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free]
   //Other Abilities 
   var noAbility = new Ability ("Already Sold","never", doNothing, "does nothing", shopAbilities.length)
   let strengthDebuffOnDeathS2 = new Ability("no more strength", "onDeath", strengthDebuffOnDeathEffectS2, "\n- Has 1 health \n- On Death, debuffs all enemy strength stats by 25%", shopAbilities.length + 1)
   let stunned = new Ability("stunned :(", "onHurt", stunnedEffect, "Stunned: has a range of 0 until hit.", shopAbilities.length + 2)
   let doubleStatsFake = new Ability("big boi", "never", doNothing, "has 2x the stats it normally would have", shopAbilities.length + 3)
   let bat = new Ability("bat", "onHurt", batEffect, "When damaged deal 1/2 the damage you took to all units then become a vampire.", shopAbilities.length + 4)
-  let soulRelease = new Ability ("soul eater?", "onAttack", soulReleaseEffect, "Before attacking deal the strength of the last enemy you KO'ed to your opponents first unit", shopAbilities.length + 5)
+  let soulRelease = new Ability ("soul eater?", "onAttack", soulReleaseEffect, "Before attacking deal half the strength of the last enemy you KO'ed to your opponents first unit \n\n\n\n\n buffed:) ", shopAbilities.length + 5)
 let otherAbilities = [noAbility, strengthDebuffOnDeathS2, stunned, doubleStatsFake, bat, soulRelease]
 let abilities = shopAbilities.concat(otherAbilities)
 
@@ -150,10 +151,18 @@ function healthBuffAllEffect (unit) {
   }
 }
 function reactivateOnBuysOnSellEffect (unit) {
+  loadPlayerMoney()
   for (let otherUnit of unit.player.units) {
     if (otherUnit.ability.when == "onBuy") {
       otherUnit.ability.effect(otherUnit)
     }
+  }
+  savePlayerMoney()
+  let player = unit.player
+  if (player.number == 1){
+      gameInfo.getRange("f2").setValue(player.availibleUnits)
+    } else {
+      gameInfo.getRange("g2").setValue(player.availibleUnits)
   }
 }
 function yoinkRangeOnBuyEffect (unit) {
@@ -201,7 +210,7 @@ function generalBuffsEffect(unit) {
   field.getRange("a1").getValues()
 }
 function stealBuffsEffect (stat, amount, otherUnit, unit) {
-  if (stat == "health" || otherUnit.ability == buffAllOnBuff) {
+  if (stat == "health" || otherUnit.ability == freeStrength) {
     return
   }
   let multiplier = 1
@@ -286,12 +295,11 @@ function niceZombieEffect (unit) {
   }
   unit.buff("damage", (highestHealthUnit.health/2 - unit.damage))
 }
-function buffAllOnBuffEffect (stat, amount, unit) {
+function freeStrengthEffect (stat, amount, unit) {
   var player = unit.player
-  for (let otherUnit of player.units) {
-    if (unit.ability != otherUnit.ability) {
-      otherUnit.buff("damage", 1)
-    }
+  let otherUnit = player.units[player.units.length - 1]
+  if (unit != otherUnit) {
+    otherUnit.buff("damage", 1)
   }
   unit.buff(stat, - amount)
   field.getRange("a1").getValues()
@@ -365,12 +373,18 @@ function soulEaterEffect (unit, target) {
   let name = target.damage
   unit.ability = soulRelease
   unit.ability.name = name.toString()
+  field.getRange("a1").getValue()
 }
 function soulReleaseEffect(unit) {
   let damage =  parseInt(unit.ability.name)
   let otherUnit = game.players[unit.player.number % 2].units[0]
   unit.ability = soulEater
-  otherUnit.takeDamage(damage)
-
+  otherUnit.takeDamage(damage/2)
+  unit.update("debuffed:(")
+  field.getRange("a1").getValue()
+  stopwatch.sleep(0.25)
 }
 
+function buy1Get1FreeEffect(unit) {
+  unit.player.availibleUnits += 1
+}
