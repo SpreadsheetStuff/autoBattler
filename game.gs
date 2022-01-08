@@ -65,7 +65,6 @@ class Game  {
     //variable stuff
     let player1 = this.players[0]
     let player2 = this.players[1]
-    var previousLengths = player1.units.length + player2.units.length
 
     //battle loop
     while (player1.units.length > 0 && player2.units.length > 0) {
@@ -129,14 +128,11 @@ class Game  {
       }
       field.getRange("a1").getValue()
 
-      //Checking for KOs
-      if (previousLengths != player1.units.length + player2.units.length) {
-        for (player of this.players) {
-          player.advanceAllUnits()
-        }
-        previousLengths = player1.units.length + player2.units.length
-        field.getRange("a1").getValue()
+      //advancing everything
+      for (player of this.players) {
+        player.advanceAllUnits()
       }
+      field.getRange("a1").getValue()
     }
 
     //After battle stuff
