@@ -21,6 +21,10 @@ class Player {
     this.loadMoney()
     const selection = SpreadsheetApp.getActiveSpreadsheet().getSelection()
     const selectedCell = selection.getCurrentCell()
+    if (this.findUnit(getFieldColumn(this.number, selectedCell.getColumn()))) {
+      ui.alert("there is already a unit there")
+      return
+    }
     var refund = unitType.buyFunction(this, true, selectedCell)
     if (refund == 1) {
       return
@@ -46,6 +50,10 @@ class Player {
     }
     this.loadUnits()
     this.loadMoney()
+    if (this.findUnit(getFieldColumn(this.number, cell.getColumn()))) {
+      Logger.log(" ")
+      return
+    }
     var refund = unitType.buyFunction(this, true, cell)
     if (refund == 1) {
       return

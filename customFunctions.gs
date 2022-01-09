@@ -74,7 +74,6 @@ function player2TurnBot () {
   while (player2.availibleUnits > 0){
     let biggestUnit = player2.shop.unitTypes[0]
     for (let unitType of player2.shop.unitTypes) {
-      Logger.log(unitType.baseHealth + " " + biggestUnit.baseHealth)
       if (unitType.baseHealth > biggestUnit.baseHealth) {
         biggestUnit = unitType
       }
@@ -84,11 +83,13 @@ function player2TurnBot () {
     } else {
       let deletedAUnit = false
       for (let unit of player2.units) {
-        if (unit.health < biggestUnit.health) {
+        if (unit.health < biggestUnit.baseHealth) {
           let column = unit.column
           deletedAUnit = true
-          player2.deleteUnit(unit)
-          player2.createUnit(biggestUnit, column)
+          unit.sell()
+          player2.saveUnits()
+          Logger.log(player2.units.map(a => a.toArray()))
+          player2.buyForBots(biggestUnit, 25 - column * 2)
         }
       }
       if (!deletedAUnit) {

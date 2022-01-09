@@ -12,10 +12,6 @@ class UnitType {
   }
   //buying 
   static refundForUnits(player, selectedCell) {
-    if (selectedCell.getValue()) {
-      ui.alert("There are already units there")
-      return [1,0]
-    }
     // Check if right place
     if (selectionValid(selectedCell) == false) {
       ui.alert("Invalid Location","Select a cell to place a unit there",ui.ButtonSet.OK)
