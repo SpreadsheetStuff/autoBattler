@@ -1,7 +1,6 @@
 class UnitType {
   constructor(baseHealth, baseAttack, baseSpeed, baseRange, ability) {
     this.name = ability.name
-    this.cost = 1
     this.baseHealth = baseHealth
     this.baseAttack = baseAttack
     this.baseSpeed = baseSpeed
@@ -12,41 +11,24 @@ class UnitType {
     }
   }
   //buying 
-  static refundForUnits(amount, player, cost) {
-    if (amount < 1) {
-      return [0,0]
-    }
-    const selection = SpreadsheetApp.getActiveSpreadsheet().getSelection()
-    const selectedCell = selection.getCurrentCell()
-
+  static refundForUnits(player, selectedCell) {
     if (selectedCell.getValue()) {
       ui.alert("There are already units there")
-      return [amount * cost,0]
+      return [1,0]
     }
-
-    //Check for excess or less than amount
-    var refund = 0
-    if (amount > 1)  {
-      refund += (amount - 1) * cost
-    } 
     // Check if right place
-    if (selectionValid() == false) {
+    if (selectionValid(selectedCell) == false) {
       ui.alert("Invalid Location","Select a cell to place a unit there",ui.ButtonSet.OK)
-      return [amount * cost,0]
+      return [1,0]
     }
 
     const selectedColumn = getFieldColumn(player.number, selectedCell.getColumn())
 
-    return [refund, selectedColumn]
+    return [0, selectedColumn]
 
   }
-
-  buyFunction(amount, player, refundOnly) {
-    var [refund, sColumn] = UnitType.refundForUnits(amount, player, this.cost)
-
-    if (amount == 0) {
-      return refund
-    }
+  buyFunction(player, refundOnly, selectedCell) {
+    var [refund, sColumn] = UnitType.refundForUnits(player, selectedCell)
 
     if (refundOnly == false) {
       player.createUnit(this, sColumn)

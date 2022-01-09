@@ -9,8 +9,8 @@ class Shop {
   }
   //Generating Shop
   generateShop() {
+    this.unitTypes = []
     if (this.playerNum == 1){
-      this.unitTypes = []
       let ability = abilities[0]
       let baseStats = [10, 2, 1, 1]
       let leftover = 1
@@ -30,12 +30,11 @@ class Shop {
         this.unitTypes.push(new UnitType(stats2[0], stats2[1], stats2[2] + leftover, stats2[3], ability))
       }
     } else {
-      //this.unitTypes = p1Shop.unitTypes.map(a => a.toArray()).map(a => new UnitType(a[0], a[1], a[2], a[3], abilities[a[4]]))
       for (let type of p1Shop.unitTypes) {
+        Logger.log("e")
         this.unitTypes.push(type)
       }
     }
-    //this.unitTypes = this.unitTypes.concat(this.unitTypes)
     this.draw()
     this.save()
   }

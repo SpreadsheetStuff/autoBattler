@@ -19,12 +19,14 @@ class Player {
     }
     this.loadUnits()
     this.loadMoney()
-    var refund = unitType.buyFunction(1, this, true)
+    const selection = SpreadsheetApp.getActiveSpreadsheet().getSelection()
+    const selectedCell = selection.getCurrentCell()
+    var refund = unitType.buyFunction(this, true, selectedCell)
     if (refund == 1) {
       return
     }
     if (this.availibleUnits >= 1) {
-        unitType.buyFunction(1, this, false)
+        unitType.buyFunction(this, false, selectedCell)
         this.availibleUnits -= 1
         this.shop.deleteItem(unitType)
         this.saveMoney()
@@ -36,6 +38,30 @@ class Player {
         return
       }
     ui.alert("You already have the max units for this round")
+  }
+  buyForBots(unitType, column) {
+    let cell = this.activeSheet.getRange(1,column)
+    if (unitType.baseHealth == 0) {
+      return
+    }
+    this.loadUnits()
+    this.loadMoney()
+    var refund = unitType.buyFunction(this, true, cell)
+    if (refund == 1) {
+      return
+    }
+    if (this.availibleUnits >= 1) {
+        unitType.buyFunction(this, false, cell)
+        this.availibleUnits -= 1
+        this.shop.deleteItem(unitType)
+        this.saveMoney()
+        if (this.number == 1){
+          gameInfo.getRange("f2").setValue(this.availibleUnits)
+        } else {
+          gameInfo.getRange("g2").setValue(this.availibleUnits)
+        }
+        return
+      }
   }
   //
   createUnit(type, column) {

@@ -28,7 +28,7 @@ function moveCustomFunction() {
   if (player.number == 2) {
     response = 11 - response
   }
-  if (selectionValid() && response != column) {
+  if (selectionValid(selection = SpreadsheetApp.getSelection().getCurrentCell()) && response != column) {
     field.getRange(1,unit.column,2).setValue("")
     if (player.findUnit(response)) {
       player.deleteUnit(unit)
@@ -65,4 +65,44 @@ function u5() {
   let shop = findPlayer().shop
   shop.load()
   findPlayer().buy(shop.unitTypes[4])
+}
+function player2TurnBot () {
+  let player2 = game.players[1]
+  player2.shop.load()
+  player2.loadMoney()
+  player2.loadUnits()
+  while (player2.availibleUnits > 0){
+    let biggestUnit = player2.shop.unitTypes[0]
+    for (let unitType of player2.shop.unitTypes) {
+      Logger.log(unitType.baseHealth + " " + biggestUnit.baseHealth)
+      if (unitType.baseHealth > biggestUnit.baseHealth) {
+        biggestUnit = unitType
+      }
+    }
+    if (player2.units.length < 5) {
+      player2.buyForBots(biggestUnit, 13 - player2.units.length * 2)
+    } else {
+      let deletedAUnit = false
+      for (let unit of player2.units) {
+        if (unit.health < biggestUnit.health) {
+          let column = unit.column
+          deletedAUnit = true
+          player2.deleteUnit(unit)
+          player2.createUnit(biggestUnit, column)
+        }
+      }
+      if (!deletedAUnit) {
+        break
+      }
+    }
+  }
+  player2.saveUnits()
+  player2.saveMoney()
+  saveOrLoadPlayersReady(false)
+  if (game.players[0].ready) {
+    game.endTurn()
+  } else {
+    player2.ready = true
+  }
+  saveOrLoadPlayersReady(true)
 }
