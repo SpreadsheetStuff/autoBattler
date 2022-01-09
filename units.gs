@@ -218,7 +218,6 @@ class Unit {
   }
 
   toArray() {
-    this.update()
     return [this.name, this.health, this.damage, this.speed, this.range, this.column, this.player.number, this.ability.id]
   }
 

@@ -39,9 +39,12 @@ class Ability {
   let soulEater = new Ability ("soul eater?", "onKO", soulEaterEffect, "After KOing a unit, gain their soul. Before attacking release that soul, dealing half the strength of the KO'ed enemy to your opponents first unit", 22)
   let buy1Get1Free = new Ability("buy one get 2", "onBuy", buy1Get1FreeEffect, "When bought, lets you buy another unit", 23)
   let disableAbilities = new Ability("no more abilities", "onAttack", disableAbilitesEffect, "When you attack, the closest unit loses its ability", 24)
+  //25
   let berserker = new Ability("berserker", "onTurnEnd", berserkerEffect, "At the end of each turn, converts all but 1 of this units health into strength", 25)
+  let dejaVu = new Ability("deja vu", "onDeath", dejaVuEffect, "On death, pass on this ability and this units stats (other than health) to the unit behind this", 26)
+
   //List of all abilities that can be found in the shop
-  var shopAbilities = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, swapOnBattleStart, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker]
+  var shopAbilities = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, swapOnBattleStart, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu]
   //Other Abilities 
   var noAbility = new Ability ("Already Sold","never", doNothing, "does nothing", shopAbilities.length)
   let strengthDebuffOnDeathS2 = new Ability("no more strength", "onDeath", strengthDebuffOnDeathEffectS2, "\n- Has 1 health \n- On Death, debuffs all enemy strength stats by 25%", shopAbilities.length + 1)
@@ -401,4 +404,15 @@ function berserkerEffect(unit) {
   let health = unit.health - 1
   unit.buff("health", - health)
   unit.buff("damage", health)
+}
+function dejaVuEffect(unit) {
+  let units = unit.player.units
+  let unitBehind = units[1]
+  let health = unitBehind.health
+  let column = unitBehind.column
+  unitBehind = Unit.constructFromArray(unit.toArray())
+  unitBehind.health = health
+  unitBehind.column = column
+  unit.player.units[1] = unitBehind
+  field.getRange("a1").getValue()
 }
