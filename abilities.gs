@@ -41,7 +41,7 @@ class Ability {
   let disableAbilities = new Ability("no more abilities", "onAttack", disableAbilitesEffect, "When you attack, the closest unit loses its ability", 24)
   //25
   let berserker = new Ability("berserker", "onTurnEnd", berserkerEffect, "At the end of each turn, converts all but 1 of this units health into strength", 25)
-  let dejaVu = new Ability("deja vu", "onDeath", dejaVuEffect, "On death, pass on this ability and this units stats (other than health) to the unit behind this", 26)
+  let dejaVu = new Ability("deja vu", "onDeath", dejaVuEffect, "On death, pass on this ability and this units strength to the unit behind this", 26)
 
   //List of all abilities that can be found in the shop
   var shopAbilities = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, swapOnBattleStart, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu]
@@ -362,16 +362,21 @@ function vampireEffect(unit, amount) {
 }
 function batEffect(unit, amount) {
   unit.ability = vampire
+  unit.update("yay")
   if (unit.health > 0){
     for (let player of game.players){
       for (let otherUnit of player.units) {
         if (otherUnit != unit) {
-          otherUnit.takeDamage(amount/2)
+          field.getRange("a1").getValue()
+          otherUnit.takeDamage(2)
         }
       }
     }
   }
+  stopwatch.sleep(0.25)
+  field.getRange("a1").getValue()
   unit.name = "vampire"
+
 }
 
 function soulEaterEffect (unit, target) {
@@ -407,12 +412,13 @@ function berserkerEffect(unit) {
 }
 function dejaVuEffect(unit) {
   let units = unit.player.units
+  if (units.length < 2) {
+    return
+  }
   let unitBehind = units[1]
-  let health = unitBehind.health
-  let column = unitBehind.column
-  unitBehind = Unit.constructFromArray(unit.toArray())
-  unitBehind.health = health
-  unitBehind.column = column
-  unit.player.units[1] = unitBehind
+  unitBehind.name = "deja vu"
+  unitBehind.damage = unit.damage
+  unitBehind.ability = dejaVu
+  //unit.player.units[1] = unitBehind
   field.getRange("a1").getValue()
 }
