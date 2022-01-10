@@ -479,6 +479,8 @@ function laserEffect(unit, targets) {
   let player = unit.player
   for (let otherUnit of player.units){
     if (otherUnit.ability == chargedBattery) {
+      unit.update("yay")
+      field.getRange("a1").getValue()
       let damage = otherUnit.damage
       for (let enemy of targets[0].player.units){
         enemy.takeDamage(damage)
