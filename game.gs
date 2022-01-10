@@ -157,8 +157,17 @@ class Game  {
     }
     setOrGetWinner(winner)
 
-    //Unreadying both players and giving them more money
+    //loading units and activation on battle end abilities 
     this.loadUnits()
+    for (let player of this.players) {
+      for (let unit of player.units) {
+        if (unit.ability.when == "onBattleEnd") {
+          unit.ability.effect(unit)
+        }
+      }
+    }
+    this.saveUnits()
+    //Unreadying both players and giving them more money
     loadPlayerMoney()
     for (let player of this.players) {
       player.availibleUnits += 2

@@ -27,30 +27,33 @@ class Ability {
   let generalBuffs = new Ability("free range :)", "onBuy", generalBuffsEffect, "On buy, buff all other units by one of each stat.", 11)
   let stealBuffs = new Ability("hmm part 2", "onOtherBuff", stealBuffsEffect, "When another team member is buffed in a stat other than health steal half of that buff.", 12)
   //Pool 2
-  let stunOnDeath = new Ability("setup", "onDeath", stunOnDeathEffect, "On death, the attacker is stunned (loses all range and it's ability) unil it takes a hit", 13)
-  let zombie = new Ability("Zombie", "onBuff", zombieEffect, "When buffed, converts all units into zombies. Gains +2 strength and health per converted", 14)
+  let stunOnDeath = new Ability("setup", "onDeath", stunOnDeathEffect, "On death, the attacker is stunned (loses all range and it's ability) unil it takes a hit.", 13)
+  let zombie = new Ability("Zombie", "onBuff", zombieEffect, "When buffed, converts all units into zombies. Gains +2 strength and health per converted.", 14)
   //15
   let sniper = new Ability("sniper", "onAttack", sniperEffect, "When attacking, deals full damage to the farthest unit in your range, but half damage to the closest.", 15)
   let niceZombie = new Ability("nice zombie ;)", "onBattleStart", niceZombieEffect, "Before battle, has a strength stat equal to half the health of your opponents highest health unit.", 16)
-  let freeStrength = new Ability("free strength", "onBuff", freeStrengthEffect, "On buff,  lose that buff but buff the left-most unit (unless this unit is the left-most) with this ability with 1 strength", 17)
-  let summoner = new Ability("summoner", "onDeath", summonerEffect, "On death, summons a copy of the opponent with 15 health in the 5th column", 18)
-  let offensiveBuffer = new Ability("monkey bootleg", "onTurnEnd", offensiveBufferEffect, "On turn end, give the unit ahead +2 strength and speed if it has <15 of that stat respectively", 19)
+  let freeStrength = new Ability("free strength", "onBuff", freeStrengthEffect, "On buff,  lose that buff but buff the left-most unit (unless this unit is the left-most) with this ability with 1 strength.", 17)
+  let summoner = new Ability("summoner", "onDeath", summonerEffect, "On death, summons a copy of the opponent with 15 health in the 5th column.", 18)
+  let offensiveBuffer = new Ability("monkey bootleg", "onTurnEnd", offensiveBufferEffect, "On turn end, give the unit ahead +2 strength and speed if it has <15 of that stat respectively.", 19)
   //20
-  let doubleStats = new Ability("big boi", "stats", doubleStatsEffect, "has 2x the stats it normally would have", 20)
+  let doubleStats = new Ability("big boi", "stats", doubleStatsEffect, "Has 2x the stats it normally would have.", 20)
   let vampire = new Ability("vampire", "onHurt", vampireEffect, "When hurt, get back 1/2 of the health you lost (rounded down) then become a bat.", 21)
-  let soulEater = new Ability ("soul eater?", "onKO", soulEaterEffect, "After KOing a unit, gain their soul. Before attacking release that soul, dealing half the strength of the KO'ed enemy to your opponents first unit", 22)
-  let buy1Get1Free = new Ability("buy one get 2", "onBuy", buy1Get1FreeEffect, "When bought, lets you buy another unit", 23)
-  let disableAbilities = new Ability("no more abilities", "onAttack", disableAbilitesEffect, "When you attack, the closest unit loses its ability", 24)
+  let soulEater = new Ability ("soul eater?", "onKO", soulEaterEffect, "After KOing a unit, gain their soul. Before attacking release that soul, dealing half the strength of the KO'ed enemy to your opponents first unit.", 22)
+  let buy1Get1Free = new Ability("buy one get 2", "onBuy", buy1Get1FreeEffect, "When bought, lets you buy another unit.", 23)
+  let disableAbilities = new Ability("no more abilities", "onAttack", disableAbilitesEffect, "When you attack, the closest unit loses its ability.", 24)
   //25
-  let berserker = new Ability("berserker", "onTurnEnd", berserkerEffect, "At the end of each turn, converts all but 1 of this units health into strength", 25)
-  let dejaVu = new Ability("deja vu", "onDeath", dejaVuEffect, "On death, pass on this ability and this units strength to the unit behind this", 26)
+  let berserker = new Ability("berserker", "onTurnEnd", berserkerEffect, "At the end of each turn, converts all but 1 of this units health into strength.", 25)
+  let dejaVu = new Ability("deja vu", "onDeath", dejaVuEffect, "On death, pass on this ability and this units strength to the unit behind this.", 26)
   //Pool 3
+  let basicBattery = new Ability("Basic Battery", "onBuy", charge, "When bought, becomes charged and can be used to power up other units.", 27)
+  let chainingBattery = new Ability("Chaining Battery", "onBatteryCharge", charge, "When another battery is charged, this unit becomes charged.", 28)
+  let recyclingBattery = new Ability("Recycling Battery", "onBatteryDischarge", charge, "When another battery is uncharged, this unit becomes charged.", 29)
 
   //Different shop pools so that if, in the future I want to only use some shops I can
   var shopPool1 = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs]
   var shopPool2 = [stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu]
-  var shopPool3 = [generalBuffs, yoinkRangeOnBuy, reactivateOnBuysOnSell, speedBuffOnBuy, buy1Get1Free]
-  var shopPoolAll = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu]
+  var shopPool3 = [basicBattery, chainingBattery, recyclingBattery, reactivateOnBuysOnSell, speedBuffOnBuy]
+  var shopPoolAll = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu, basicBattery, chainingBattery, recyclingBattery]
 
   //Other Abilities 
   var noAbility = new Ability ("Already Sold","never", doNothing, "does nothing", shopPoolAll.length)
@@ -59,7 +62,9 @@ class Ability {
   let doubleStatsFake = new Ability("big boi", "never", doNothing, "has 2x the stats it normally would have", shopPoolAll.length + 3)
   let bat = new Ability("bat", "onHurt", batEffect, "When damaged deal 1/2 the damage you took to all units then become a vampire.", shopPoolAll.length + 4)
   let soulRelease = new Ability ("soul eater?", "onAttack", soulReleaseEffect, "Before attacking deal half the strength of the last enemy you KO'ed to your opponents first unit \n\n\n\n\n buffed:) ", shopPoolAll.length + 5)
-let otherAbilities = [noAbility, strengthDebuffOnDeathS2, stunned, doubleStatsFake, bat, soulRelease]
+  let chargedBattery = new Ability ("battery", "onBattleEnd", uncharge, "Used to power up certain units. At the end of the next battle loses its charge.", shopPoolAll.length + 6)
+  let unchargedBattery = new Ability ("uncharged battery", "onSell", batterySpeedBuff, "When deleted gives all units +1 speed.", shopPoolAll.length + 6)
+let otherAbilities = [noAbility, strengthDebuffOnDeathS2, stunned, doubleStatsFake, bat, soulRelease, chargedBattery, unchargedBattery]
 let abilities = shopPoolAll.concat(otherAbilities)
 
 //Adding only enable abilities to shop
@@ -147,23 +152,11 @@ function stealStatsOnKOEffect (unit, target) {
 function annoyingThingEffect(unit) {
   let player = unit.player
   let otherPlayer = game.players[player.number % 2]
-  /*if (unit.temporaryDamage == 12345) {
-    return
-  }*/
   let otherUnit = otherPlayer.findUnit(5 - (unit.column - 1) % 5 + (5 * (otherPlayer.number - 1)))
   if (otherUnit) {
     var unit2 = Unit.constructFromArray(otherUnit.toArray())
     unit2.column = unit.column
     unit2.player = player
-
-   /* let idx = otherPlayer.units.indexOf(otherUnit)
-    let otherColumn = otherUnit.column
-    otherUnit = Unit.constructFromArray(unit.toArray())
-    otherUnit.column = otherColumn
-    otherUnit.player = otherPlayer
-    otherUnit.temporaryDamage = 12345
-    otherPlayer.units[idx] = otherUnit*/
-
     player.units[player.units.indexOf(unit)] = unit2
   }
 }
@@ -194,8 +187,10 @@ function yoinkRangeOnBuyEffect (unit) {
   let player = unit.player
   let yoinked = 0
   for (let otherUnit of player.units) {
-    yoinked += otherUnit.range - 1
-    otherUnit.buff("range", -otherUnit.range + 1)
+    if (otherUnit != unit){
+      yoinked += otherUnit.range - 1
+      otherUnit.buff("range", -otherUnit.range + 1)
+    }
   }
   unit.buff("damage", yoinked)
 }
@@ -450,3 +445,31 @@ function dejaVuEffect(unit) {
 
 
 //Pool 3
+function charge(unit) {
+  unit.ability = chargedBattery
+  unit.name = "Charged Battery"
+  for (let otherUnit of unit.player.units) {
+    if (otherUnit.ability.when == "onBatteryCharge" && otherUnit != unit) {
+      otherUnit.ability.effect(otherUnit, unit)
+    }
+  }
+}
+function uncharge(unit) {
+  unit.ability = unchargedBattery
+  unit.name = "Uncharged Battery"
+  unit.update()
+  for (let otherUnit of unit.player.units) {
+    if (otherUnit.ability.when == "onBatteryDischarge" && otherUnit != unit) {
+      otherUnit.ability.effect(otherUnit, unit)
+    }
+  }
+}
+function batterySpeedBuff(unit) {
+  var player = unit.player
+  for (let otherUnit of player.units) {
+    if (unit != otherUnit) {
+      otherUnit.buff("speed", 1)
+    }
+  }
+  field.getRange("a1").getValues()
+}
