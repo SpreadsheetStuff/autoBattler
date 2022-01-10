@@ -41,6 +41,7 @@ function moveCustomFunction() {
   player.saveUnits()
 }
 
+// Shop
 function u1() {
   let shop = findPlayer().shop
   shop.load()
@@ -66,6 +67,7 @@ function u5() {
   shop.load()
   findPlayer().buy(shop.unitTypes[4])
 }
+
 function player2TurnBot () {
   let player2 = game.players[1]
   player2.shop.load()
@@ -106,4 +108,40 @@ function player2TurnBot () {
     player2.ready = true
   }
   saveOrLoadPlayersReady(true)
+}
+
+//Ability Pools
+function togglePoolNumber(number, toggleTo){
+  let abilityPools = JSON.parse(properties.getProperty("ability pools"))
+  abilityPools[number - 1] = toggleTo
+  for (let pool of abilityPools) {
+    if (pool == true) {
+      properties.setProperty("ability pools", JSON.stringify(abilityPools))
+      drawGameMenu()
+      return
+    }
+  }
+  ui.alert("You can't disable all the shop pools")
+}
+function enableAllPools () {
+  properties.setProperty("ability pools", [true, true, true])
+  drawGameMenu()
+}
+function enablePool1(){
+  togglePoolNumber(1, true)
+}
+function disablePool1(){
+  togglePoolNumber(1, false)
+}
+function enablePool2(){
+  togglePoolNumber(2, true)
+}
+function disablePool2(){
+  togglePoolNumber(2, false)
+}
+function enablePool3(){
+  togglePoolNumber(3, true)
+}
+function disablePool3(){
+  togglePoolNumber(3, false)
 }
