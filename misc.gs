@@ -46,7 +46,7 @@ function drawGameMenu() {
       abilityPoolMenu.addItem("Enable Shop Pool #" + (parseInt(poolIdx) + 1), "enablePool" + (parseInt(poolIdx) + 1))
     }
   }
-  abilityPoolMenu.addItem("Enable All Shop Pools", "doNothing")
+  abilityPoolMenu.addItem("Enable All Shop Pools", "enableAllPools")
   var gameMenu = ui.createMenu("Game")
     .addItem("do nothing", "doNothing")
     .addItem('Reset','reset')

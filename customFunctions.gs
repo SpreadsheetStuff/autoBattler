@@ -124,7 +124,7 @@ function togglePoolNumber(number, toggleTo){
   ui.alert("You can't disable all the shop pools")
 }
 function enableAllPools () {
-  properties.setProperty("ability pools", [true, true, true])
+  properties.setProperty("ability pools", JSON.stringify([true, true, true]))
   drawGameMenu()
 }
 function enablePool1(){

@@ -9,6 +9,7 @@ class Ability {
   }
 }
 // Ability objects
+  //Pool 1
   //0
   let speedBuffOnBuy = new Ability("Sanic", "onBuy", speedBuffEffect, "When bought, buffs all other units with + 3 speed!", 0)
   let strengthDebuffOnDeathS1 = new Ability("no more strength","stats", strengthDebuffOnDeathEffectS1, "", 1)
@@ -17,7 +18,7 @@ class Ability {
   let copyStatsFromBehind = new Ability("Clone", "onAttack", copyStatsFromBehindEffect, "Before attacking copies the strength, speed and range from the unit behind it.", 4)
   //5
   let stealStatsOnKO = new Ability("budget sweeper", "onKO", stealStatsOnKOEffect, "After KOing an enemy gain 1/2 of their strength and speed.", 5)
-  let swapOnBattleStart = new Ability("Annoying thing", "onBattleStart", statYoinkEffect, "At the start of each battle copies an opponent's unit that is in the mirrored column as this.", 6)
+  let annoyingThing = new Ability("Annoying thing", "onBattleStart", annoyingThingEffect, "At the start of each battle copies an opponent's unit that is in the mirrored column as this.", 6)
   let healthBuffAllOnTurnEnd = new Ability("free health", "onTurnEnd", healthBuffAllEffect, "At the end of each turn buffs all units, without this ability, by 2 health.", 7)
   let reactivateOnBuysOnSell = new Ability("I can't name things", "onSell", reactivateOnBuysOnSellEffect, 'When deleted, activates all "When bought" abilities of your other units.', 8)
   let yoinkRangeOnBuy = new Ability("Balanced", "onBuy", yoinkRangeOnBuyEffect, "When bought steals all other units' range stats and converts them to strength.", 9)
@@ -25,8 +26,8 @@ class Ability {
   let extraBuffs = new Ability("hmmmmmmm", "onOtherBuff" , extraBuffsEffect, "When a unit is buffed give +1 of the stat it was buffed in.", 10)
   let generalBuffs = new Ability("free range :)", "onBuy", generalBuffsEffect, "On buy, buff all other units by one of each stat.", 11)
   let stealBuffs = new Ability("hmm part 2", "onOtherBuff", stealBuffsEffect, "When another team member is buffed in a stat other than health steal half of that buff.", 12)
+  //Pool 2
   let stunOnDeath = new Ability("setup", "onDeath", stunOnDeathEffect, "On death, the attacker is stunned (loses all range and it's ability) unil it takes a hit", 13)
-
   let zombie = new Ability("Zombie", "onBuff", zombieEffect, "When buffed, converts all units into zombies. Gains +2 strength and health per converted", 14)
   //15
   let sniper = new Ability("sniper", "onAttack", sniperEffect, "When attacking, deals full damage to the farthest unit in your range, but half damage to the closest.", 15)
@@ -43,11 +44,13 @@ class Ability {
   //25
   let berserker = new Ability("berserker", "onTurnEnd", berserkerEffect, "At the end of each turn, converts all but 1 of this units health into strength", 25)
   let dejaVu = new Ability("deja vu", "onDeath", dejaVuEffect, "On death, pass on this ability and this units strength to the unit behind this", 26)
-  //Different shop pools so that if, in the future I want to only use some shops I can
-  var shopPool1 = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, swapOnBattleStart, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath]
-  var shopPool2 = [zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu]
+  //Pool 3
 
-  var shopPoolAll = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, swapOnBattleStart, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu]
+  //Different shop pools so that if, in the future I want to only use some shops I can
+  var shopPool1 = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs]
+  var shopPool2 = [stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu]
+  var shopPool3 = [generalBuffs, yoinkRangeOnBuy, reactivateOnBuysOnSell, speedBuffOnBuy, buy1Get1Free]
+  var shopPoolAll = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu]
 
   //Other Abilities 
   var noAbility = new Ability ("Already Sold","never", doNothing, "does nothing", shopPoolAll.length)
@@ -58,7 +61,20 @@ class Ability {
   let soulRelease = new Ability ("soul eater?", "onAttack", soulReleaseEffect, "Before attacking deal half the strength of the last enemy you KO'ed to your opponents first unit \n\n\n\n\n buffed:) ", shopPoolAll.length + 5)
 let otherAbilities = [noAbility, strengthDebuffOnDeathS2, stunned, doubleStatsFake, bat, soulRelease]
 let abilities = shopPoolAll.concat(otherAbilities)
-let shopAbilities = shopPoolAll
+
+//Adding only enable abilities to shop
+let shopAbilities = []
+let shopPools = [shopPool1, shopPool2, shopPool3]
+//Have to put this here to be able to load prefrences
+var properties = PropertiesService.getScriptProperties()
+// Array of booleans 
+let shopPoolPrefrences = JSON.parse(properties.getProperty("ability pools"))
+for (let i in shopPoolPrefrences) {
+  if (shopPoolPrefrences[i]) {
+    shopAbilities = shopAbilities.concat(shopPools[i])
+  }
+}
+
 //All ability functions
 function doNothing() {
   //ui.alert("This Does Nothing")
@@ -128,7 +144,7 @@ function stealStatsOnKOEffect (unit, target) {
   unit.buff("speed",target.speed/2)
   field.getRange("a1").getValue()
 }
-function statYoinkEffect(unit) {
+function annoyingThingEffect(unit) {
   let player = unit.player
   let otherPlayer = game.players[player.number % 2]
   /*if (unit.temporaryDamage == 12345) {
@@ -246,6 +262,10 @@ function stunOnDeathEffect (unit) {
   otherUnit.buff("range", -otherUnit.range)
   field.getRange("a1").getValue()
 }
+
+
+
+//Pool 2
 function stunnedEffect(unit) {
   let name = unit.ability.name.split("*")
   unit.ability = abilities[parseInt(name[0])]
@@ -426,3 +446,7 @@ function dejaVuEffect(unit) {
   //unit.player.units[1] = unitBehind
   field.getRange("a1").getValue()
 }
+
+
+
+//Pool 3
