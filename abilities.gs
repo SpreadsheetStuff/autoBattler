@@ -47,13 +47,13 @@ class Ability {
   //Pool 3
   let basicBattery = new Ability("Basic Battery", "onBuy", charge, "When bought, becomes charged and can be used to power up other units.", 27)
   let chainingBattery = new Ability("Chaining Battery", "onBatteryCharge", charge, "When another battery is charged, this unit becomes charged.", 28)
-  let recyclingBattery = new Ability("Recycling Battery", "onBatteryDischarge", charge, "When another battery is uncharged, this unit becomes charged.", 29)
+  let laser = new Ability("Laser", "onAttack", laserEffect, "Before attacking, if possible, deletes a charged battery and damages all enemy units for  that batteries strength stat.", 29)
 
   //Different shop pools so that if, in the future I want to only use some shops I can
   var shopPool1 = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs]
   var shopPool2 = [stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu]
-  var shopPool3 = [basicBattery, chainingBattery, recyclingBattery, reactivateOnBuysOnSell, speedBuffOnBuy]
-  var shopPoolAll = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu, basicBattery, chainingBattery, recyclingBattery]
+  var shopPool3 = [basicBattery, chainingBattery, noAbility, laser, speedBuffOnBuy]
+  var shopPoolAll = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu, basicBattery, chainingBattery, laser]
 
   //Other Abilities 
   var noAbility = new Ability ("Already Sold","never", doNothing, "does nothing", shopPoolAll.length)
@@ -63,7 +63,7 @@ class Ability {
   let bat = new Ability("bat", "onHurt", batEffect, "When damaged deal 1/2 the damage you took to all units then become a vampire.", shopPoolAll.length + 4)
   let soulRelease = new Ability ("soul eater?", "onAttack", soulReleaseEffect, "Before attacking deal half the strength of the last enemy you KO'ed to your opponents first unit \n\n\n\n\n buffed:) ", shopPoolAll.length + 5)
   let chargedBattery = new Ability ("battery", "onBattleEnd", uncharge, "Used to power up certain units. At the end of the next battle loses its charge.", shopPoolAll.length + 6)
-  let unchargedBattery = new Ability ("uncharged battery", "onSell", batterySpeedBuff, "When deleted gives all units +1 speed.", shopPoolAll.length + 6)
+  let unchargedBattery = new Ability ("uncharged battery", "onSell", batterySpeedBuff, "When deleted, lets you buy another unit", shopPoolAll.length + 7)
 let otherAbilities = [noAbility, strengthDebuffOnDeathS2, stunned, doubleStatsFake, bat, soulRelease, chargedBattery, unchargedBattery]
 let abilities = shopPoolAll.concat(otherAbilities)
 
@@ -448,6 +448,7 @@ function dejaVuEffect(unit) {
 function charge(unit) {
   unit.ability = chargedBattery
   unit.name = "Charged Battery"
+  unit.update()
   for (let otherUnit of unit.player.units) {
     if (otherUnit.ability.when == "onBatteryCharge" && otherUnit != unit) {
       otherUnit.ability.effect(otherUnit, unit)
@@ -465,11 +466,29 @@ function uncharge(unit) {
   }
 }
 function batterySpeedBuff(unit) {
-  var player = unit.player
-  for (let otherUnit of player.units) {
-    if (unit != otherUnit) {
-      otherUnit.buff("speed", 1)
+  loadPlayerMoney()
+  let player = unit.player
+  player.availibleUnits += 1
+  if (player.number == 1){
+    gameInfo.getRange("f2").setValue(player.availibleUnits)
+  } else {
+    gameInfo.getRange("g2").setValue(player.availibleUnits)
+  }
+  savePlayerMoney()
+}
+function laserEffect(unit, targets) {
+  let player = unit.player
+  for (let otherUnit of player.units){
+    if (otherUnit.ability == chargedBattery) {
+      let damage = otherUnit.damage
+      for (let enemy of targets[0].player.units){
+        enemy.takeDamage(damage)
+      }
+      player.deleteUnit(otherUnit)
+      field.getRange(1, otherUnit.column, 2).setValue("")
+      player.advanceAllUnits()
+      return
     }
   }
-  field.getRange("a1").getValues()
+
 }
