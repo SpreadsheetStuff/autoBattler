@@ -38,7 +38,7 @@ class Ability {
   //20
   let doubleStats = new Ability("big boi", "stats", doubleStatsEffect, "Has 2x the stats it normally would have.", 20)
   let vampire = new Ability("vampire", "onHurt", vampireEffect, "When hurt, get back 1/2 of the health you lost (rounded down) then become a bat.", 21)
-  let soulEater = new Ability ("soul eater?", "onKO", soulEaterEffect, "After KOing a unit, gain their soul. Before attacking release that soul, dealing half the strength of the KO'ed enemy to your opponents first unit.", 22)
+  let soulEater = new Ability ("soul eater?", "onKO", soulEaterEffect, "After KOing a unit, gain their soul. Then release that soul, dealing half the strength of the KO'ed enemy to the closest enemy.", 22)
   let buy1Get1Free = new Ability("buy one get 2", "onBuy", buy1Get1FreeEffect, "When bought, lets you buy another unit.", 23)
   let disableAbilities = new Ability("no more abilities", "onAttack", disableAbilitesEffect, "When you attack, the closest unit loses its ability.", 24)
   //25
@@ -246,6 +246,10 @@ function stealBuffsEffect (stat, amount, otherUnit, unit) {
     unit.buff(stat, amount)
   }
 }
+
+
+
+//Pool 2
 function stunOnDeathEffect (unit) {
   if (game.players[unit.player.number % 2].units.length == 0) {
     return
@@ -258,10 +262,6 @@ function stunOnDeathEffect (unit) {
   otherUnit.buff("range", -otherUnit.range)
   field.getRange("a1").getValue()
 }
-
-
-
-//Pool 2
 function stunnedEffect(unit) {
   let name = unit.ability.name.split("*")
   unit.ability = abilities[parseInt(name[0])]
