@@ -39,6 +39,10 @@ class Player {
         } else {
           gameInfo.getRange("g2").setValue(this.availibleUnits)
         }
+        for (let unit of this.units) {
+          unit.update()
+        }
+        field.getRange("a1").getValue()
         return
       }
     ui.alert("You already have the max units for this round")
@@ -83,6 +87,11 @@ class Player {
     if (this.units.indexOf(unit) > - 1){
       this.units.splice(this.units.indexOf(unit), 1)
     }
+    field.getRange("a1").getValue()
+    for (let unit of this.units) {
+      unit.update()
+    }
+    field.getRange("a1").getValue()
   }
   //
   findUnit(column) {

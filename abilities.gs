@@ -48,12 +48,13 @@ class Ability {
   let basicBattery = new Ability("Basic Battery", "onBuy", charge, "When bought, becomes charged and can be used to power up other units.", 27)
   let chainingBattery = new Ability("Chaining Battery", "onBatteryCharge", charge, "When another battery is charged, this unit becomes charged.", 28)
   let laser = new Ability("Laser", "onAttack", laserEffect, "Before attacking, if possible, deletes a charged battery and damages all enemy units for  that batteries strength stat.", 29)
+  let magicSciFiThing = new Ability("Magic Sci-Fi Thing", "onBatteryCharge", magicThingEffect, "When a battery charges, gain +1 range", 30)
 
   //Different shop pools so that if, in the future I want to only use some shops I can
   var shopPool1 = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs]
   var shopPool2 = [stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu]
-  var shopPool3 = [basicBattery, chainingBattery, noAbility, laser, speedBuffOnBuy]
-  var shopPoolAll = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu, basicBattery, chainingBattery, laser]
+  var shopPool3 = [basicBattery, chainingBattery, magicSciFiThing, laser, speedBuffOnBuy]
+  var shopPoolAll = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu, basicBattery, chainingBattery, laser, magicSciFiThing]
 
   //Other Abilities 
   var noAbility = new Ability ("Already Sold","never", doNothing, "does nothing", shopPoolAll.length)
@@ -63,7 +64,7 @@ class Ability {
   let bat = new Ability("bat", "onHurt", batEffect, "When damaged deal 1/2 the damage you took to all units then become a vampire.", shopPoolAll.length + 4)
   let soulRelease = new Ability ("soul eater?", "onAttack", soulReleaseEffect, "Before attacking deal half the strength of the last enemy you KO'ed to your opponents first unit \n\n\n\n\n buffed:) ", shopPoolAll.length + 5)
   let chargedBattery = new Ability ("battery", "onBattleEnd", uncharge, "Used to power up certain units. At the end of the next battle loses its charge.", shopPoolAll.length + 6)
-  let unchargedBattery = new Ability ("uncharged battery", "onSell", batterySpeedBuff, "When deleted, lets you buy another unit", shopPoolAll.length + 7)
+  let unchargedBattery = new Ability ("uncharged battery", "onSell", chargeOtherBattery, "When deleted, re-charges the left-most uncharged battery", shopPoolAll.length + 7)
 let otherAbilities = [noAbility, strengthDebuffOnDeathS2, stunned, doubleStatsFake, bat, soulRelease, chargedBattery, unchargedBattery]
 let abilities = shopPoolAll.concat(otherAbilities)
 
@@ -386,7 +387,6 @@ function batEffect(unit, amount) {
     for (let player of game.players){
       for (let otherUnit of player.units) {
         if (otherUnit != unit) {
-          field.getRange("a1").getValue()
           otherUnit.takeDamage(2)
         }
       }
@@ -465,16 +465,15 @@ function uncharge(unit) {
     }
   }
 }
-function batterySpeedBuff(unit) {
-  loadPlayerMoney()
+function chargeOtherBattery(unit) {
   let player = unit.player
-  player.availibleUnits += 1
-  if (player.number == 1){
-    gameInfo.getRange("f2").setValue(player.availibleUnits)
-  } else {
-    gameInfo.getRange("g2").setValue(player.availibleUnits)
+  for (let otherUnit of player.units){
+    if (otherUnit.ability == unchargedBattery && otherUnit != unit) {
+      charge(otherUnit)
+      otherUnit.update("buffed:)")
+      return
+    }
   }
-  savePlayerMoney()
 }
 function laserEffect(unit, targets) {
   let player = unit.player
@@ -490,5 +489,8 @@ function laserEffect(unit, targets) {
       return
     }
   }
-
+}
+function magicThingEffect(unit) {
+  unit.buff("range", 1)
+  field.getRange("a1").getValue()
 }
