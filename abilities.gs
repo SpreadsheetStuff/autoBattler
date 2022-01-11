@@ -51,12 +51,13 @@ class Ability {
   let magicSciFiThing = new Ability("Magic Sci-Fi Thing", "onBatteryCharge", magicThingEffect, "When a battery charges, gain +2 range.", 30)
   let freeBatteries = new Ability("Battery Pack", "onSell", freeBatteriesEffect, "On deletion, fills your entire shop with basic bateries that have this units stats.", 31)
   let generatePool3Only = new Ability("Hackerman", "onBattleEnd", generatePool3OnlyEffect, "At the start of your next turn, both shops only generate untis from pool 3 and this unit dies.", 32)
+  let freeSearch = new Ability("Free Search", "onBatteryCharge", freeSearchEffect, "When a battery is charged this unit's ability is replaced by an ability of your choice'", 33)
 
   //Different shop pools so that if, in the future I want to only use some shops I can
   var shopPool1 = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs]
   var shopPool2 = [stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu]
-  var shopPool3 = [basicBattery, chainingBattery, magicSciFiThing, laser, freeBatteries, generatePool3Only]
-  var shopPoolAll = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu, basicBattery, chainingBattery, laser, magicSciFiThing, freeBatteries, generatePool3Only]
+  var shopPool3 = [basicBattery, chainingBattery, magicSciFiThing, laser, freeBatteries, generatePool3Only, freeSearch]
+  var shopPoolAll = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu, basicBattery, chainingBattery, laser, magicSciFiThing, freeBatteries, generatePool3Only, freeSearch]
 
   //Other Abilities 
   var noAbility = new Ability ("Already Sold","never", doNothing, "does nothing", shopPoolAll.length)
@@ -494,6 +495,9 @@ function laserEffect(unit, targets) {
     }
   }
 }
+
+
+//Id: 30
 function magicThingEffect(unit) {
   unit.buff("range", 2)
   field.getRange("a1").getValue()
@@ -516,4 +520,23 @@ function generatePool3OnlyEffect (unit) {
   shop1.generateShop()
   game.players[1].shop.generateShop()
   unit.die()
+}
+function freeSearchEffect(unit) {
+  let whatUnit = ui.prompt("Name a units ability", "(Caps sensitive)", ui.ButtonSet.OK).getResponseText()
+  let responseMatches = false
+  while (!responseMatches) {
+    for (var type of shopPoolAll) {
+      if (type.name == whatUnit.toString()) {
+        responseMatches = true
+        break
+      }
+    }
+    if (responseMatches) {
+      break
+    }
+    whatUnit = ui.prompt("Invalid name", "Name another units ability", ui.ButtonSet.OK).getResponseText()
+  }
+  unit.ability = type
+  unit.name = whatUnit
+  unit.update()
 }
