@@ -156,17 +156,6 @@ class Game  {
       var winner = "Draw"
     }
     setOrGetWinner(winner)
-
-    //loading units and activation on battle end abilities 
-    this.loadUnits()
-    for (let player of this.players) {
-      for (let unit of player.units) {
-        if (unit.ability.when == "onBattleEnd") {
-          unit.ability.effect(unit)
-        }
-      }
-    }
-    this.saveUnits()
     //Unreadying both players and giving them more money
     loadPlayerMoney()
     for (let player of this.players) {
@@ -181,7 +170,16 @@ class Game  {
     for (let shop of this.shops) {
       shop.generateShop()
     }
-    
+    //loading units and activation on battle end abilities 
+    this.loadUnits()
+    for (let player of this.players) {
+      for (let unit of player.units) {
+        if (unit.ability.when == "onBattleEnd") {
+          unit.ability.effect(unit)
+        }
+      }
+    }
+    this.saveUnits()
     //Round
     this.round = parseInt(properties.getProperty("round number"))
     this.round += 1

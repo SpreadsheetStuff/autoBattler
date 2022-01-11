@@ -55,7 +55,7 @@ class Player {
     this.loadUnits()
     this.loadMoney()
     if (this.findUnit(getFieldColumn(this.number, cell.getColumn()))) {
-      Logger.log(" ")
+      Logger.log(this.findUnit(getFieldColumn(this.number, cell.getColumn())).toArray())
       return
     }
     var refund = unitType.buyFunction(this, true, cell)

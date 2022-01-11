@@ -73,6 +73,8 @@ function player2TurnBot () {
   player2.shop.load()
   player2.loadMoney()
   player2.loadUnits()
+  player2.advanceAllUnits()
+  player2.saveUnits()
   while (player2.availibleUnits > 0){
     let biggestUnit = player2.shop.unitTypes[0]
     for (let unitType of player2.shop.unitTypes) {
@@ -90,7 +92,6 @@ function player2TurnBot () {
           deletedAUnit = true
           unit.sell()
           player2.saveUnits()
-          Logger.log(player2.units.map(a => a.toArray()))
           player2.buyForBots(biggestUnit, 25 - column * 2)
         }
       }
