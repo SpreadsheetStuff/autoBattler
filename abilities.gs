@@ -105,6 +105,7 @@ function speedBuffEffect(unit) {
 function strengthDebuffOnDeathEffectS1(unitType) {
   unitType.baseHealth = 1
   unitType.ability = strengthDebuffOnDeathS2
+  return unitType
 }
 function strengthDebuffOnDeathEffectS2(unit) {
   var units = game.players[unit.player.number % 2].units
@@ -377,6 +378,7 @@ function doubleStatsEffect(unitType) {
   unitType.baseSpeed = unitType.baseSpeed * 2
   unitType.baseRange = unitType.baseRange * 2
   unitType.ability = doubleStatsFake
+  return unitType
 }
 function vampireEffect(unit, amount) {
   unit.buff("health", Math.floor(amount/2))
@@ -538,5 +540,13 @@ function freeSearchEffect(unit) {
   }
   unit.ability = type
   unit.name = whatUnit
+  if (unit.ability.when == "stats") {
+    let type = new UnitType(unit.health, unit.damage, unit.speed, unit.range, unit.ability)
+    let idx = unit.player.units.indexOf(unit)
+    unit = Unit.constructFromType(type, unit.column, unit.player)
+    player.units[idx] = unit
+  } else if (unit.ability.when == "onBatteryCharge") {
+    unit.ability.effect(unit)
+  }
   unit.update()
 }
