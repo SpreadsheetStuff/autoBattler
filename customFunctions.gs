@@ -82,6 +82,9 @@ function player2TurnBot () {
         biggestUnit = unitType
       }
     }
+    if (biggestUnit.ability == freeSearch) {
+      break
+    }
     if (player2.units.length < 5) {
       player2.buyForBots(biggestUnit, 13 - player2.units.length * 2)
     } else {

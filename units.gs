@@ -65,6 +65,11 @@ class Unit {
     var unit = new Unit(name, health, damage, speed,range, abilities[abilityId], Math.floor(column), game.players[playerNum-1])
     return unit
   }
+
+  toArray() {
+    return [this.name, this.health, this.damage, this.speed, this.range, this.column, this.player.number, this.ability.id]
+  }
+  
   // Attacking
   attack (units, tie) {
     // target selection
@@ -193,10 +198,6 @@ class Unit {
     if (amount < 0){
       this.update("debuffed:(")
     }
-  }
-
-  toArray() {
-    return [this.name, this.health, this.damage, this.speed, this.range, this.column, this.player.number, this.ability.id]
   }
 
   //Movement

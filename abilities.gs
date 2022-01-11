@@ -66,7 +66,7 @@ class Ability {
   let doubleStatsFake = new Ability("big boi", "never", doNothing, "has 2x the stats it normally would have", shopPoolAll.length + 3)
   let bat = new Ability("bat", "onHurt", batEffect, "When damaged deal 1/2 the damage you took to all units then become a vampire.", shopPoolAll.length + 4)
   let soulRelease = new Ability ("soul eater?", "onAttack", soulReleaseEffect, "Before attacking deal half the strength of the last enemy you KO'ed to your opponents first unit \n\n\n\n\n buffed:) ", shopPoolAll.length + 5)
-  let chargedBattery = new Ability ("battery", "onBattleEnd", uncharge, "Used to power up certain units. At the end of the next battle loses its charge.", shopPoolAll.length + 6)
+  let chargedBattery = new Ability ("battery", "never", doNothing, "Used to power up certain units.", shopPoolAll.length + 6)
   let unchargedBattery = new Ability ("uncharged battery", "onSell", chargeOtherBattery, "When deleted, re-charges the left-most uncharged battery", shopPoolAll.length + 7)
 let otherAbilities = [noAbility, strengthDebuffOnDeathS2, stunned, doubleStatsFake, bat, soulRelease, chargedBattery, unchargedBattery]
 let abilities = shopPoolAll.concat(otherAbilities)
@@ -469,6 +469,14 @@ function uncharge(unit) {
       otherUnit.ability.effect(otherUnit, unit)
     }
   }
+  let savedData = JSON.parse(properties.getProperty("player " + unit.player.number + " units"))
+  let column = game.unitColumnsForBattle.indexOf(unit)
+  for (let unitArray of savedData) {
+    if (unitArray[7] == shopPoolAll.length + 6 && unitArray[5] == column) {
+      unitArray[7] = shopPoolAll.length + 7
+    }
+  }
+  properties.setProperty("player " + unit.number + " units", JSON.stringify(savedData))
 }
 function chargeOtherBattery(unit) {
   let player = unit.player
@@ -490,7 +498,7 @@ function laserEffect(unit, targets) {
       for (let enemy of targets[0].player.units){
         enemy.takeDamage(damage)
       }
-      player.deleteUnit(otherUnit)
+      uncharge(otherUnit)
       field.getRange(1, otherUnit.column, 2).setValue("")
       player.advanceAllUnits()
       return

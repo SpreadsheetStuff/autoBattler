@@ -6,6 +6,8 @@ class Game  {
     properties.setProperty("round number", this.round)
     }
     this.shops = shops
+    this.inBattle = false
+    this.unitColumnsForBattle = [0,0,0,0,0,0,0,0,0,0,0]
   }
   //getting and setting units from properties service
   saveUnits () {
@@ -54,6 +56,14 @@ class Game  {
     //variable stuff
     let player1 = this.players[0]
     let player2 = this.players[1]
+
+    // Setting up column stuff for batteries
+    this.inBattle = true
+    for (let player of this.players) {
+      for (let unit of player.units) {
+        this.unitColumnsForBattle[unit.column] = unit
+      }
+    }
 
     //battle loop
     while (player1.units.length > 0 && player2.units.length > 0) {
@@ -123,7 +133,7 @@ class Game  {
       }
       field.getRange("a1").getValue()
     }
-
+    this.inBattle = false
     //After battle stuff
 
     //Advancing
