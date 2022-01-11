@@ -47,7 +47,7 @@ class Ability {
   //Pool 3
   let basicBattery = new Ability("Basic Battery", "onBuy", charge, "When bought, becomes charged and can be used to power up other units.", 27)
   let chainingBattery = new Ability("Chaining Battery", "onBatteryCharge", charge, "When another battery is charged, this unit becomes charged.", 28)
-  let laser = new Ability("Laser", "onAttack", laserEffect, "Before attacking, if possible, deletes a charged battery and damages all enemy units for  that batteries strength stat.", 29)
+  let laser = new Ability("Laser", "onAttack", laserEffect, "Before attacking, if possible, uncharges a charged battery and damages all enemy units for  that batteries strength stat.", 29)
   let magicSciFiThing = new Ability("Magic Sci-Fi Thing", "onBatteryCharge", magicThingEffect, "When a battery charges, gain +2 range.", 30)
   let freeBatteries = new Ability("Battery Pack", "onSell", freeBatteriesEffect, "On deletion, fills your entire shop with basic bateries that have this units stats.", 31)
   let generatePool3Only = new Ability("Hackerman", "onBattleEnd", generatePool3OnlyEffect, "At the start of your next turn, both shops only generate untis from pool 3 and this unit dies.", 32)
@@ -66,7 +66,7 @@ class Ability {
   let doubleStatsFake = new Ability("big boi", "never", doNothing, "has 2x the stats it normally would have", shopPoolAll.length + 3)
   let bat = new Ability("bat", "onHurt", batEffect, "When damaged deal 1/2 the damage you took to all units then become a vampire.", shopPoolAll.length + 4)
   let soulRelease = new Ability ("soul eater?", "onAttack", soulReleaseEffect, "Before attacking deal half the strength of the last enemy you KO'ed to your opponents first unit \n\n\n\n\n buffed:) ", shopPoolAll.length + 5)
-  let chargedBattery = new Ability ("battery", "never", doNothing, "Used to power up certain units.", shopPoolAll.length + 6)
+  let chargedBattery = new Ability ("battery", "never", doNothing, "Used to power up certain units. (When uncharged in battle, is also uncharged out of battle).", shopPoolAll.length + 6)
   let unchargedBattery = new Ability ("uncharged battery", "onSell", chargeOtherBattery, "When deleted, re-charges the left-most uncharged battery", shopPoolAll.length + 7)
 let otherAbilities = [noAbility, strengthDebuffOnDeathS2, stunned, doubleStatsFake, bat, soulRelease, chargedBattery, unchargedBattery]
 let abilities = shopPoolAll.concat(otherAbilities)
@@ -469,14 +469,22 @@ function uncharge(unit) {
       otherUnit.ability.effect(otherUnit, unit)
     }
   }
+  if (!game.inBattle) {
+    return
+  }
   let savedData = JSON.parse(properties.getProperty("player " + unit.player.number + " units"))
   let column = game.unitColumnsForBattle.indexOf(unit)
+  Logger.log(savedData)
+  Logger.log(column)
   for (let unitArray of savedData) {
-    if (unitArray[7] == shopPoolAll.length + 6 && unitArray[5] == column) {
+    if (unitArray[5] == column) {
+      Logger.log("yay")
       unitArray[7] = shopPoolAll.length + 7
+      unitArray[0] = "Uncharged Battery"
     }
   }
-  properties.setProperty("player " + unit.number + " units", JSON.stringify(savedData))
+  Logger.log(savedData)
+  properties.setProperty("player " + unit.player.number + " units", JSON.stringify(savedData))
 }
 function chargeOtherBattery(unit) {
   let player = unit.player
