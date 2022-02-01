@@ -31,12 +31,12 @@ class Ability {
   let zombie = new Ability("Zombie", "onBuff", zombieEffect, "When buffed, converts all units into zombies. Gains +2 strength and health per converted.", 14)
   //15
   let sniper = new Ability("sniper", "onAttack", sniperEffect, "When attacking, deals full damage to the farthest unit in your range, but half damage to the closest.", 15)
-  let niceZombie = new Ability("nice zombie ;)", "onBattleStart", niceZombieEffect, "Before battle, has a strength stat equal to half the health of your opponents highest health unit.", 16)
+  let niceZombie = new Ability("nice zombie ;)", "onBattleStart", niceZombieEffect, "Before battle, has a strength stat equal to the health of your opponents highest health unit.", 16)
   let freeStrength = new Ability("free strength", "onBuff", freeStrengthEffect, "On buff,  lose that buff but buff the left-most unit (unless this unit is the left-most) with this ability with 1 strength.", 17)
   let summoner = new Ability("summoner", "onDeath", summonerEffect, "On death, summons a copy of the opponent with 15 health in the 5th column.", 18)
   let offensiveBuffer = new Ability("monkey bootleg", "onTurnEnd", offensiveBufferEffect, "On turn end, give the unit ahead +2 strength and speed if it has <15 of that stat respectively.", 19)
   //20
-  let doubleStats = new Ability("big boi", "stats", doubleStatsEffect, "Has 2x the stats it normally would have.", 20)
+  let doubleStats = new Ability("big boi", "stats", doubleStatsEffect, "Has 2x the strength and health it normally would have.", 20)
   let vampire = new Ability("vampire", "onHurt", vampireEffect, "When hurt, get back 1/2 of the health you lost (rounded down) then become a bat.", 21)
   let soulEater = new Ability ("soul eater?", "onKO", soulEaterEffect, "After KOing a unit, gain their soul. Then release that soul, dealing half the strength of the KO'ed enemy to the closest enemy.", 22)
   let buy1Get1Free = new Ability("buy one get 2", "onBuy", buy1Get1FreeEffect, "When bought, lets you buy another unit.", 23)
@@ -49,15 +49,16 @@ class Ability {
   let chainingBattery = new Ability("Chaining Battery", "onBatteryCharge", charge, "When another battery is charged, this unit becomes charged.", 28)
   let laser = new Ability("Laser", "onAttack", laserEffect, "Before attacking, if possible, uncharges a charged battery and damages all enemy units for  that batteries strength stat.", 29)
   let magicSciFiThing = new Ability("Magic Sci-Fi Thing", "onBatteryCharge", magicThingEffect, "When a battery charges, gain +2 range.", 30)
-  let freeBatteries = new Ability("Battery Pack", "onSell", freeBatteriesEffect, "On deletion, fills your entire shop with basic bateries that have this units stats.", 31)
+  let freeBatteries = new Ability("Battery Pack", "onSell", freeBatteriesEffect, "On deletion, fills your entire shop with basic bateries that have this units stats and lets you buy an extra unit.", 31)
   let generatePool3Only = new Ability("Hackerman", "onBattleEnd", generatePool3OnlyEffect, "At the start of your next turn, both shops only generate untis from pool 3 and this unit dies.", 32)
   let freeSearch = new Ability("Free Search", "onBatteryCharge", freeSearchEffect, "When a battery is charged this unit's ability is replaced by an ability of your choice'", 33)
+  let shield = new Ability("Shield", "onOpponentAttack", shieldEffect, "When an opponent attacks a unit, this unit negates that damage and either uncharges a battery or takes that damage.", 34)
 
   //Different shop pools so that if, in the future I want to only use some shops I can
   var shopPool1 = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs]
   var shopPool2 = [stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu]
-  var shopPool3 = [basicBattery, chainingBattery, magicSciFiThing, laser, freeBatteries, generatePool3Only, freeSearch]
-  var shopPoolAll = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu, basicBattery, chainingBattery, laser, magicSciFiThing, freeBatteries, generatePool3Only, freeSearch]
+  var shopPool3 = [basicBattery, chainingBattery, magicSciFiThing, laser, freeBatteries, generatePool3Only, freeSearch, shield]
+  var shopPoolAll = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu, basicBattery, chainingBattery, laser, magicSciFiThing, freeBatteries, generatePool3Only, freeSearch, shield]
 
   //Other Abilities 
   var noAbility = new Ability ("Already Sold","never", doNothing, "does nothing", shopPoolAll.length)
@@ -322,7 +323,7 @@ function niceZombieEffect (unit) {
       highestHealthUnit = unit
     }
   }
-  unit.buff("damage", (highestHealthUnit.health/2 - unit.damage))
+  unit.buff("damage", (highestHealthUnit.health - unit.damage))
 }
 function freeStrengthEffect (stat, amount, unit) {
   var player = unit.player
@@ -375,8 +376,6 @@ function offensiveBufferEffect(unit) {
 function doubleStatsEffect(unitType) {
   unitType.baseHealth = unitType.baseHealth * 2
   unitType.baseAttack = unitType.baseAttack * 2
-  unitType.baseSpeed = unitType.baseSpeed * 2
-  unitType.baseRange = unitType.baseRange * 2
   unitType.ability = doubleStatsFake
   return unitType
 }
@@ -521,6 +520,9 @@ function magicThingEffect(unit) {
   field.getRange("a1").getValue()
 }
 function freeBatteriesEffect(unit) {
+  loadPlayerMoney()
+  unit.player.availibleUnits += 1
+  savePlayerMoney()
   let newUnitType = new UnitType(unit.health, unit.damage, unit.speed, unit.range, basicBattery)
   let shop = unit.player.shop
   shop.load()
@@ -565,4 +567,15 @@ function freeSearchEffect(unit) {
     unit.ability.effect(unit)
   }
   unit.update()
+}
+function shieldEffect (enemy, unit) {
+  let player = unit.player
+  for (let otherUnit of player.units){
+    if (otherUnit.ability == chargedBattery) {
+      uncharge(otherUnit)
+      return false
+    }
+  }
+  unit.takeDamage(enemy.damage)
+  return false
 }

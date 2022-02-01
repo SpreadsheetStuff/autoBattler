@@ -1,3 +1,7 @@
+/**
+ * @OnlyCurrentDoc
+ */
+
 function selectionValid(cell) {
   const selectedColumnRelative = cell.getColumn() - 4
 

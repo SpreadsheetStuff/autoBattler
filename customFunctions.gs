@@ -42,31 +42,31 @@ function moveCustomFunction() {
 }
 
 // Shop
-function u1() {
-  let shop = findPlayer().shop
-  shop.load()
-  findPlayer().buy(shop.unitTypes[0])
-}
-function u2() {
-  let shop = findPlayer().shop
-  shop.load()
-  findPlayer().buy(shop.unitTypes[1])
-}
-function u3() {
-  let shop = findPlayer().shop
-  shop.load()
-  findPlayer().buy(shop.unitTypes[2])
-}
-function u4() {
-  let shop = findPlayer().shop
-  shop.load()
-  findPlayer().buy(shop.unitTypes[3])
-}
-function u5() {
-  let shop = findPlayer().shop
-  shop.load()
-  findPlayer().buy(shop.unitTypes[4])
-}
+  function u1() {
+    let shop = findPlayer().shop
+    shop.load()
+    findPlayer().buy(shop.unitTypes[0])
+  }
+  function u2() {
+    let shop = findPlayer().shop
+    shop.load()
+    findPlayer().buy(shop.unitTypes[1])
+  }
+  function u3() {
+    let shop = findPlayer().shop
+    shop.load()
+    findPlayer().buy(shop.unitTypes[2])
+  }
+  function u4() {
+    let shop = findPlayer().shop
+    shop.load()
+    findPlayer().buy(shop.unitTypes[3])
+  }
+  function u5() {
+    let shop = findPlayer().shop
+    shop.load()
+    findPlayer().buy(shop.unitTypes[4])
+  }
 
 function player2TurnBot () {
   let player2 = game.players[1]
@@ -77,20 +77,20 @@ function player2TurnBot () {
   player2.saveUnits()
   while (player2.availibleUnits > 0){
     let biggestUnit = player2.shop.unitTypes[0]
+    if (biggestUnit.ability == freeSearch) {
+      biggestUnit = player2.shop.unitTypes[1]
+    }
     for (let unitType of player2.shop.unitTypes) {
-      if (unitType.baseHealth > biggestUnit.baseHealth) {
+      if (unitType.baseAttack > biggestUnit.baseAttack && unitType.ability != freeSearch) {
         biggestUnit = unitType
       }
-    }
-    if (biggestUnit.ability == freeSearch) {
-      break
     }
     if (player2.units.length < 5) {
       player2.buyForBots(biggestUnit, 13 - player2.units.length * 2)
     } else {
       let deletedAUnit = false
       for (let unit of player2.units) {
-        if (unit.health < biggestUnit.baseHealth) {
+        if (unit.damage < biggestUnit.baseAttack) {
           let column = unit.column
           deletedAUnit = true
           unit.sell()
@@ -115,37 +115,38 @@ function player2TurnBot () {
 }
 
 //Ability Pools
-function togglePoolNumber(number, toggleTo){
-  let abilityPools = JSON.parse(properties.getProperty("ability pools"))
-  abilityPools[number - 1] = toggleTo
-  for (let pool of abilityPools) {
-    if (pool == true) {
-      properties.setProperty("ability pools", JSON.stringify(abilityPools))
-      drawGameMenu()
-      return
+  function togglePoolNumber(number, toggleTo){
+    let abilityPools = JSON.parse(properties.getProperty("ability pools"))
+    abilityPools[number - 1] = toggleTo
+    for (let pool of abilityPools) {
+      if (pool == true) {
+        properties.setProperty("ability pools", JSON.stringify(abilityPools))
+        drawGameMenu()
+        return
+      }
     }
+    ui.alert("You can't disable all the shop pools")
   }
-  ui.alert("You can't disable all the shop pools")
-}
-function enableAllPools () {
-  properties.setProperty("ability pools", JSON.stringify([true, true, true]))
-  drawGameMenu()
-}
-function enablePool1(){
-  togglePoolNumber(1, true)
-}
-function disablePool1(){
-  togglePoolNumber(1, false)
-}
-function enablePool2(){
-  togglePoolNumber(2, true)
-}
-function disablePool2(){
-  togglePoolNumber(2, false)
-}
-function enablePool3(){
-  togglePoolNumber(3, true)
-}
-function disablePool3(){
-  togglePoolNumber(3, false)
-}
+  function enableAllPools () {
+    properties.setProperty("ability pools", JSON.stringify([true, true, true]))
+    drawGameMenu()
+  }
+  function enablePool1(){
+    togglePoolNumber(1, true)
+  }
+  function disablePool1(){
+    togglePoolNumber(1, false)
+  }
+  function enablePool2(){
+    togglePoolNumber(2, true)
+  }
+  function disablePool2(){
+    togglePoolNumber(2, false)
+  }
+  function enablePool3(){
+    togglePoolNumber(3, true)
+  }
+  function disablePool3(){
+    togglePoolNumber(3, false)
+  }
+//

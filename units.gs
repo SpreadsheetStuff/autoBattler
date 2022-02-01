@@ -91,6 +91,13 @@ class Unit {
         }
       }
     }
+    for (let unit of game.players[this.player.number % 2].units) {
+      if (unit.ability.when == "onOpponentAttack") {
+        if (!unit.ability.effect(this, unit)) {
+          targets = []
+        }
+      }
+    }
 
     //self evident
     if (targets.length == 0) {
