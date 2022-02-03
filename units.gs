@@ -1,4 +1,17 @@
+/**
+ * Class for items in the shop
+ */
 class UnitType {
+  /**
+   * --- 
+   * Constructs a new instance of the `UnitType` class\
+   * Also activates abilities with a .when of "stats"
+   * @param {number} baseHealth The `UnitType`'s base health
+   * @param {number} baseAttack The `UnitType`'s base attack
+   * @param {number} baseSpeed The `UnitType`'s base speed
+   * @param {number} baseRange The `UnitType`'s base range
+   * @param {Ability} ability the ability of the new `UnitType`
+   */
   constructor(baseHealth, baseAttack, baseSpeed, baseRange, ability) {
     this.name = ability.name
     this.baseHealth = baseHealth
@@ -10,21 +23,22 @@ class UnitType {
       this.ability.effect(this)
     }
   }
-  //buying 
-  static refundForUnits(player, selectedCell) {
-    // Check if right place
+  /**
+   * ---
+   * Checks if you are able to buy a unit, then either creates that unit or gives the user an alert that they can't buy the unit.
+   * @param {Player} player The player buying the unit
+   * @param {boolean} refundOnly Whether this should create any units or just return whether it can buy a unit
+   * @param {SpreadsheetApp.Range} selectedCell The cell the user is selecting
+   * @returns {number} whether a unit can be placed in the selected cell
+   */
+  buyFunction(player, refundOnly, selectedCell) {
     if (selectionValid(selectedCell) == false) {
       ui.alert("Invalid Location","Select a cell to place a unit there",ui.ButtonSet.OK)
-      return [1,0]
+      return 1
+    } else {
+      var refund = 0
     }
-
-    const selectedColumn = getFieldColumn(player.number, selectedCell.getColumn())
-
-    return [0, selectedColumn]
-
-  }
-  buyFunction(player, refundOnly, selectedCell) {
-    var [refund, sColumn] = UnitType.refundForUnits(player, selectedCell)
+    const sColumn = getFieldColumn(player.number, selectedCell.getColumn())
 
     if (refundOnly == false) {
       player.createUnit(this, sColumn)
@@ -32,16 +46,41 @@ class UnitType {
     return refund
   }
 
-  //to strings
+  /**
+   * Returns the text this UnitType has inside the shop's ui
+   * @returns {string}
+   */
   toShopString () {
-    return ("HP: " + this.baseHealth +" | Strength: " + this.baseAttack + "\nSpeed: " + this.baseSpeed + " | Range: " + this.baseRange + "\nAbility: " + this.ability.text)
+    return "HP: " + this.baseHealth +" | Strength: " + this.baseAttack + "\nSpeed: " + this.baseSpeed + " | Range: " + this.baseRange + "\nAbility: " + this.ability.text
   }
+  /**
+   * Converts this UnitType's properties so they can be stored on `PropertiesService`
+   * @returns {Array<number>}
+   */
   toArray() {
     return [this.baseHealth, this.baseAttack, this.baseSpeed, this.baseRange, this.ability.id]
   }
 }
-/////////////
+/**
+ * Unit Class
+ */
+Unit.cons
 class Unit {
+  /**
+   * --- 
+   * Constructs a new instance of the `Unit` class\
+   * This class also has two other constructors:
+   * - Unit.constructFromType()
+   * - Unit.constructFromArray()
+   * @param {string} name This unit's name
+   * @param {number} health The `Unit`'s health
+   * @param {number} attack The `Unit`'s attack
+   * @param {number} speed The `Unit`'s speed
+   * @param {number} range The `Unit`'s range
+   * @param {Ability} ability the of this`Unit`
+   * @param {number} column What column this is in inside the "Field Thing" sheet
+   * @param {Player} player What player this unit belongs to
+   */
   constructor (name, health, damage, speed, range, ability, column, player) {
     this.name = name
     this.health = health
@@ -53,19 +92,50 @@ class Unit {
     this.range = range
     this.temporaryDamage = this.damage
   }
+  /**
+   * --- 
+   * Constructs a new instance of the `Unit` class based of a UnitType\
+   * Also, activates onBuy effects of the unit that is constructed\
+   * This class also has two other constructors:
+   * - new Unit()
+   * - Unit.constructFromArray()
+   * @param {UnitType} type The type this unit should copy its stats from.
+   * @param {number} column What column this is in inside the "Field Thing" sheet.
+   * @param {Player} player What player this unit belongs to.
+   * @returns {Unit} The new unit
+   */
   static constructFromType (type, column, player) {
-    var unit = new Unit(type.name, type.baseHealth, type.baseAttack, type.baseSpeed, type.baseRange, type.ability, column, player)
+    let unit = new Unit(type.name, type.baseHealth, type.baseAttack, type.baseSpeed, type.baseRange, type.ability, column, player)
     if (unit.ability.when == "onBuy") {
       unit.ability.effect(unit)
     }
     return unit
   }
+  /**
+   * --- 
+   * Constructs a new instance of the `Unit` class based of an Array\
+   * This class also has two other constructors:
+   * - new Unit()
+   * - Unit.constructFromType()
+   * @param {Array<string>|Array<number>} array The array to create this unit based off of. The array should be made of the unit's:
+   * - Name
+   * - Health
+   * - Speed
+   * - Range
+   * - Column
+   * - Player's Number
+   * - Ability's Id
+   * @returns {Unit} The unit
+   */
   static constructFromArray (array) {
-    var [name, health, damage, speed, range, column, playerNum, abilityId] = array
-    var unit = new Unit(name, health, damage, speed,range, abilities[abilityId], Math.floor(column), game.players[playerNum-1])
+    const [name, health, damage, speed, range, column, playerNum, abilityId] = array
+    const unit = new Unit(name, health, damage, speed,range, abilities[abilityId], Math.floor(column), game.players[playerNum-1])
     return unit
   }
-
+  /**
+   * Converts this unit to an array that can be converted back to a unit with Unit.constructFromArray()
+   * @returns {Array[string|number]}
+   */
   toArray() {
     return [this.name, this.health, this.damage, this.speed, this.range, this.column, this.player.number, this.ability.id]
   }
