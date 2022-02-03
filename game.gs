@@ -6,6 +6,8 @@ class Game  {
     properties.setProperty("round number", this.round)
     }
     this.shops = shops
+    this.inBattle = false
+    this.unitColumnsForBattle = [0,0,0,0,0,0,0,0,0,0,0]
   }
   //getting and setting units from properties service
   saveUnits () {
@@ -54,6 +56,14 @@ class Game  {
     //variable stuff
     let player1 = this.players[0]
     let player2 = this.players[1]
+
+    // Setting up column stuff for batteries
+    this.inBattle = true
+    for (let player of this.players) {
+      for (let unit of player.units) {
+        this.unitColumnsForBattle[unit.column] = unit
+      }
+    }
 
     //battle loop
     while (player1.units.length > 0 && player2.units.length > 0) {
@@ -123,7 +133,7 @@ class Game  {
       }
       field.getRange("a1").getValue()
     }
-
+    this.inBattle = false
     //After battle stuff
 
     //Advancing
@@ -156,9 +166,7 @@ class Game  {
       var winner = "Draw"
     }
     setOrGetWinner(winner)
-
     //Unreadying both players and giving them more money
-    this.loadUnits()
     loadPlayerMoney()
     for (let player of this.players) {
       player.availibleUnits += 2
@@ -172,7 +180,16 @@ class Game  {
     for (let shop of this.shops) {
       shop.generateShop()
     }
-    
+    //loading units and activation on battle end abilities 
+    this.loadUnits()
+    for (let player of this.players) {
+      for (let unit of player.units) {
+        if (unit.ability.when == "onBattleEnd") {
+          unit.ability.effect(unit)
+        }
+      }
+    }
+    this.saveUnits()
     //Round
     this.round = parseInt(properties.getProperty("round number"))
     this.round += 1
@@ -196,8 +213,9 @@ function endTurn() {
   if (otherPlayer.ready == false) {
     saveOrLoadPlayersReady(true)
     ui.alert("Turn Ended", "However, Player " + otherPlayer.number + " still needs to end their turn!", ui.ButtonSet.OK)
+    setOrGetWinner("e")
     let previousValue = setOrGetWinner()
-    while (setOrGetWinner() == previousValue) {}
+    while (setOrGetWinner() == previousValue) {Logger.log(setOrGetWinner())}
     if (!properties.getProperty("players ready")) {
       return
     }

@@ -3,9 +3,9 @@ var player1ActiveSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("P
 var player2ActiveSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Player 2/Blue")
 var field = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Field Thing")
 var gameInfo = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Misc Game Info")
-//Ui and properties
+//Ui
 var ui = SpreadsheetApp.getUi()
-var properties = PropertiesService.getScriptProperties()
+
 //Stopwatch
 var stopwatch = new Stopwatch ()
 
