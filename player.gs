@@ -1,3 +1,6 @@
+/**
+ * Player Class
+ */
 class Player {
   constructor (sheet, number, shop) {
     this.activeSheet = sheet
