@@ -64,7 +64,6 @@ class UnitType {
 /**
  * Unit Class
  */
-Unit.cons
 class Unit {
   /**
    * --- 
@@ -134,23 +133,29 @@ class Unit {
   }
   /**
    * Converts this unit to an array that can be converted back to a unit with Unit.constructFromArray()
-   * @returns {Array[string|number]}
+   * @returns {Array<string>|Array<number>}
    */
   toArray() {
     return [this.name, this.health, this.damage, this.speed, this.range, this.column, this.player.number, this.ability.id]
   }
   
-  // Attacking
+  /**
+   * ---
+   * Attacks a unit activating on attack abilities and dealing damage.
+   * @param {Array<Unit>} units The units you want this unit to attempt to attack
+   * @param {boolean} tie If this is a tie (if it is this doesn't deal damage)
+   * @returns {Array<Unit>} The units this succesfully attacked
+   */
   attack (units, tie) {
-    // target selection
-    var targets = []
+    // Selecting targets
+    let targets = []
     for (let unit of units) {
       if (Math.abs(unit.column - this.column) <= this.range) {
         targets.push(unit)
       }
     }
 
-    //Ability
+    //Activating on attack abilities
     if (this.ability.when == "onAttack") {
       this.ability.effect(this, targets)
       //range may change so checks for that target list still works
@@ -161,6 +166,7 @@ class Unit {
         }
       }
     }
+    // game.players[this.player.number % 2] returns the other player because 1 % 2 = 1 which is the second element of a list and 2%2 returns 0
     for (let unit of game.players[this.player.number % 2].units) {
       if (unit.ability.when == "onOpponentAttack") {
         if (!unit.ability.effect(this, unit)) {
@@ -169,66 +175,88 @@ class Unit {
       }
     }
 
-    //self evident
     if (targets.length == 0) {
       return []
     }
 
-    //hitting all targets but decreasing damage
     this.temporaryDamage = this.damage
     if (!tie) {
+      //Animating itself as gray
       this.update("yay")
+      //Dealing damage to each target
       for (let target of targets) {
         if (this.range > 5) {
           target.takeDamage(this.temporaryDamage + this.range - 5)
         } else {
           target.takeDamage(this.temporaryDamage)
         }
+        //Decreasing the damage base of the proximity of the target to this unit
         this.temporaryDamage /= 2
       }
       field.getRange("a1").getValue()
-      stopwatch.sleep(0.5)
+      Stopwatch.sleep(0.5)
     }
 
     return targets
   }
+  /**
+   * Causes this unit to take damage.\
+   * Activates on hurt effects and causes this unit to do the hurt animation.\
+   * Damage is rounded up.
+   * @param {number} amount How much damage to take
+   */
   takeDamage(amount) {
     this.update("ow")
+
     amount = Math.ceil(amount)
     this.health -= amount
+
     if (this.ability.when == "onHurt") {
       this.ability.effect(this, amount)
     }
   }
-  // Death/Updating
+
+  /**
+   * Redraws this unit and plays certain animations
+   * @param {string=} damaged Extra string that is added into this units text in the ui so that conditional formating can play animations.
+   */
   update (damaged = "") {
+    //Checks for death
     if (this.health <=0 && damaged == "") {
-      Logger.log(damaged + "!!!!!!!!!!!!!!!!!!!!!!!")
       this.die()
       return
     }
+
     let infoText = field.getRange(2, this.column)
     field.getRange(1, this.column).setValue("\n" + this.name + "\n" + this.player.number)
+    //Makes it so buffs and debuffs color the bottom section of the unit while damage and attacking effects the top half.
     if (damaged == "buffed:)" || damaged == "debuffed:(") {
       infoText.setValue("HP:*"+this.health+"*Strength: "+this.damage+"\nSpeed: "+this.speed+" | Range: "+this.range+"\nAbility: "+this.ability.text+"\n\n\n\n\n\n\n"+damaged)
       return
     }
     infoText.setValue(" " + damaged + "            HP:*"+this.health+"              " + damaged + " *Strength: "+this.damage+"\nSpeed: "+this.speed+" | Range: "+this.range+"\nAbility: "+this.ability.text)
   }
-
+  /**
+   * Kills this unit and activates any death or ko effects it or the thing that ko'ed it have.
+   */
   die() {
     if (this.ability.when == "onDeath") {
       this.ability.effect(this)
     }
+
     let enemyUnit = game.players[this.player.number % 2].units[0]
     if (enemyUnit){
       if (enemyUnit.ability.when == "onKO") {
         enemyUnit.ability.effect(enemyUnit, this)
       }
     }
+
     SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Field Thing").getRange(1, this.column, 2).setValue("")
     this.player.deleteUnit(this)
   }
+  /**
+   * Sell basically the death function but activates different abilities
+   */
   sell () {
     if (this.ability.when == "onSell") {
       this.ability.effect(this)
@@ -237,7 +265,13 @@ class Unit {
     this.player.deleteUnit(this)
   }
   
+  /**
+   * Buffs this unit in a stat by a rounded down amount
+   * @param {string} stat What stat is being buffed
+   * @param {number} amount How much to buff it (negative to debuff it)
+   */
   buff(stat, amount) {
+    //Abilities
     if (this.ability.when == "onBuff" && amount > 0) {
       if (this.ability.effect(stat, amount, this)) {
         return
@@ -252,6 +286,7 @@ class Unit {
         unit.ability.effect(stat, amount, this, unit)
       }
     }
+
     amount = Math.floor(amount)
     switch (stat) {
       case "health":
@@ -269,6 +304,7 @@ class Unit {
       default:
         return
     }
+    //Animations
     if (amount > 0){
       this.update("buffed:)")
     }
@@ -277,49 +313,55 @@ class Unit {
     }
   }
 
-  //Movement
+  /**
+   * Moves the unit. Returns whether the unit was able to move
+   * @param {string} direction Whether to move the unit "left" or "right"
+   * @returns {boolean} Whether this succesfully moved
+   */
   move (direction) {
     const field = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Field Thing")
-    var i = 0
+    //Creates a temporary variable of what it's column number would be after moving
     switch (direction) {
       case "left" :
-        i = - 1
+        var newX = this.column - 1
         break
       case "right" :
-        i = 1
+        var newX = this.column + 1
         break
       default:
         return false
     }
-    var newX = this.column + i
+
+    //Checks that where it is moving is within the range units can be
     if (newX < 1 || newX > 10) {
      return false
     }
-    var adjacent = field.getRange(1,newX)
-
-    if (adjacent.getValue()) {
-      for (let player of game.players){
-        if (player.findUnit(newX)) {
-          return false
-        }
+    //Checks that it isn't going to clip into something else
+    for (let player of game.players){
+      if (player.findUnit(newX)) {
+        return false
       }
     }
+    //Moves the unit
     field.getRange(1,this.column,2).setValue("")
     this.column = newX
     this.update()
     return true
   }
-
+  /**
+   * Repeatedly moves this unit till it reaches a column or something is in the way.
+   * @param {number} column What column you want this unit to move to.
+   */
   moveTo(column) {
     while (this.column != column) {
       if (this.column > column) {
-         if (!this.move("left")) {
-           break
-         }
+        if (!this.move("left")) {
+          break
+        }
       } else {
         if (!this.move("right")) {
-           break
-         }
+          break
+        }
       }
     } 
   }

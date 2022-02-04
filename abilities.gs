@@ -124,7 +124,7 @@ function debuffOnOutspedEffect(unit) {
     return
   }
   field.getRange("a1").getValue()
-  stopwatch.sleep(0.5)
+  Stopwatch.sleep(0.5)
   unit.buff("damage", 2)
   otherUnit.buff("speed", - otherUnit.speed)
   field.getRange("a1").getValue()
@@ -396,7 +396,7 @@ function batEffect(unit, amount) {
       }
     }
   }
-  stopwatch.sleep(0.25)
+  Stopwatch.sleep(0.25)
   field.getRange("a1").getValue()
   unit.name = "vampire"
 
@@ -415,7 +415,7 @@ function soulReleaseEffect(unit) {
   otherUnit.takeDamage(damage/2)
   unit.update("debuffed:(")
   field.getRange("a1").getValue()
-  stopwatch.sleep(0.25)
+  Stopwatch.sleep(0.25)
 }
 
 function buy1Get1FreeEffect(unit) {

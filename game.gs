@@ -51,7 +51,7 @@ class Game  {
     for (var player of this.players) {
       player.advanceAllUnits()
     }
-    stopwatch.sleep(1)
+    Stopwatch.sleep(1)
 
     //variable stuff
     let player1 = this.players[0]
@@ -115,7 +115,7 @@ class Game  {
           unit.update("yay")
         }
         field.getRange("a1").getValue()
-        stopwatch.sleep(0.5)
+        Stopwatch.sleep(0.5)
       }
 
       //updating everything and redrawing
