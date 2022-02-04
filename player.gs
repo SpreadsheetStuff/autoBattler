@@ -2,54 +2,83 @@
  * Player Class
  */
 class Player {
+  /**
+   * ---
+   * Creates a new instance of the player class
+   * @param {SpreadsheetApp.SheetType} sheet The sheet that displays the ui for this player (Used to check which player's sheet the user is viewing)
+   * @param {number} number The player's number/id
+   * @param {Shop} shop A shop object storing this player's shop
+   */
   constructor (sheet, number, shop) {
     this.activeSheet = sheet
     this.number = number
+        this.shop = shop
+
     this.availibleUnits = 0
     this.ready = false
     this.units = []
-    this.shop = shop
   }
-  //
+
+  /**
+   * Buys a unit and places it in the cell the user is selecting
+   * @param {UnitType} unitType The `UnitType` object with the stats and ability of the unit you want to buy
+   */
   buy(unitType) {
+    //Already sold units have 0 health and this will prevent them from being bought
     if (unitType.baseHealth == 0) {
       return
     }
+    //Makes sure you haven't ended your turn
     saveOrLoadPlayersReady(false)
     if (this.ready) {
       ui.alert("Your turn is over")
       return
     }
+  
     this.loadUnits()
     this.loadMoney()
+
     const selection = SpreadsheetApp.getActiveSpreadsheet().getSelection()
     const selectedCell = selection.getCurrentCell()
+    //CHecks you aren't tyring to buy a unit where there is already a unit
     if (this.findUnit(getFieldColumn(this.number, selectedCell.getColumn()))) {
       ui.alert("there is already a unit there")
       return
     }
-    var refund = unitType.buyFunction(this, true, selectedCell)
-    if (refund == 1) {
+    // Checks that the user is trying to place a unit in a place that isn't where units are allowed to be
+    if (selectionValid(selectedCell) == false) {
+      ui.alert("Invalid Location","Select a cell to place a unit there",ui.ButtonSet.OK)
       return
     }
-    if (this.availibleUnits >= 1) {
-        unitType.buyFunction(this, false, selectedCell)
-        this.availibleUnits -= 1
-        this.shop.deleteItem(unitType)
-        this.saveMoney()
-        if (this.number == 1){
-          gameInfo.getRange("f2").setValue(this.availibleUnits)
-        } else {
-          gameInfo.getRange("g2").setValue(this.availibleUnits)
-        }
-        for (let unit of this.units) {
-          unit.update()
-        }
-        field.getRange("a1").getValue()
-        return
-      }
-    ui.alert("You already have the max units for this round")
+    // Checks that you can afford buying a unit
+    if (this.availibleUnits == 0) {
+      ui.alert("You already have the max units for this round")
+      return
+    }
+    this.createUnit(unitType, getFieldColumn(this.number, selectedCell.getColumn()))
+    this.availibleUnits -= 1
+    this.shop.deleteItem(unitType)
+    this.saveMoney()
+    //Updates how much money you have inside the ui
+    if (this.number == 1){
+      gameInfo.getRange("f2").setValue(this.availibleUnits)
+    } else {
+      gameInfo.getRange("g2").setValue(this.availibleUnits)
+    }
+    //Updates all units
+    for (let unit of this.units) {
+      unit.update()
+    }
+    //Redraws
+    field.getRange("a1").getValue()
   }
+
+  /**
+   * ---
+   * Buys a unit and places it in a columns given whatever calls it.
+   * @param {UnitType} unitType The `UnitType` object with the stats and ability of the unit you want to buy.
+   * @param {number} column The column to place the unit in.
+   */
   buyForBots(unitType, column) {
     let cell = this.activeSheet.getRange(1,column)
     if (unitType.baseHealth == 0) {
@@ -58,45 +87,72 @@ class Player {
     this.loadUnits()
     this.loadMoney()
     if (this.findUnit(getFieldColumn(this.number, cell.getColumn()))) {
-      Logger.log(this.findUnit(getFieldColumn(this.number, cell.getColumn())).toArray())
+      ui.alert("there is already a unit there")
       return
     }
-    var refund = unitType.buyFunction(this, true, cell)
-    if (refund == 1) {
+    // Checks that the user is trying to place a unit in a place that isn't where units are allowed to be
+    if (selectionValid(cell) == false) {
+      ui.alert("Invalid Location","Select a cell to place a unit there",ui.ButtonSet.OK)
       return
     }
-    if (this.availibleUnits >= 1) {
-        unitType.buyFunction(this, false, cell)
-        this.availibleUnits -= 1
-        this.shop.deleteItem(unitType)
-        this.saveMoney()
-        if (this.number == 1){
-          gameInfo.getRange("f2").setValue(this.availibleUnits)
-        } else {
-          gameInfo.getRange("g2").setValue(this.availibleUnits)
-        }
-        return
-      }
+    // Checks that you can afford buying a unit
+    if (this.availibleUnits == 0) {
+      ui.alert("You already have the max units for this round")
+      return
+    }
+    this.createUnit(unitType, getFieldColumn(this.number, cell.getColumn()))
+    this.availibleUnits -= 1
+    this.shop.deleteItem(unitType)
+    this.saveMoney()
+    //Updates how much money you have inside the ui
+    if (this.number == 1){
+      gameInfo.getRange("f2").setValue(this.availibleUnits)
+    } else {
+      gameInfo.getRange("g2").setValue(this.availibleUnits)
+    }
+    //Updates all units
+    for (let unit of this.units) {
+      unit.update()
+    }
+    //Redraws
+    field.getRange("a1").getValue()
   }
-  //
+
+  /**
+   * ---
+   * Creates a new unit from a `UnitType` object
+   * @param {UnitType} type The `UnitType` object of the new unit
+   * @param {number} column The column to place the unit in
+   */
   createUnit(type, column) {
-    var newUnit = Unit.constructFromType(type, column, this)
+    let newUnit = Unit.constructFromType(type, column, this)
     this.units.push(newUnit)
+    
     newUnit.update()
     this.saveUnits()
   }
-  //
+  
+  /**
+   * Deletes a unit from this player's list of units
+   * @param {Unit} unit The unit you want to delete.
+   */
   deleteUnit(unit) {
+    //Removing the unit from the units list
     if (this.units.indexOf(unit) > - 1){
       this.units.splice(this.units.indexOf(unit), 1)
     }
-    field.getRange("a1").getValue()
+    //Updating and redrawing
     for (let unit of this.units) {
       unit.update()
     }
     field.getRange("a1").getValue()
   }
-  //
+
+  /**
+   * Returns either the unit in a column or false if there is no unit in that column
+   * @param {number} column The column you want to know if there is a unit in.
+   * @returns {Unit|boolean}
+   */
   findUnit(column) {
     for (let unit of this.units) {
       if (unit.column == column) {
@@ -105,32 +161,51 @@ class Player {
     }
     return false
   }
-  //
+  
+  /**
+   * Orders the units in this players units array by their proximity to the center columns\
+   * Returs this player's units array
+   * @returns {Array<Unit>}
+   */
   orderUnits() {
-    if (this.units.length < 1) {
-      return []
+    //If there are no units or 1 unit, you can't order them
+    if (this.units.length < 2) {
+      return this.units
     }
-    var outputArray = [this.units[0]]
-    var thing = false
+    
+    let outputArray = [this.units[0]]
     for (let unitIdx in this.units) {
+      //Needs more than one unit to order them
       if (unitIdx != 0) {
-        var unit = this.units[unitIdx]
-        thing = true
-        for (var elementIdx in outputArray) {
+
+        let unit = this.units[unitIdx]
+
+        let addLater = true
+        for (let elementIdx in outputArray) {
           if (unit.column > outputArray[elementIdx].column) {
+            //If `unit` has a higher column number than the element being cycled through, the unit is inserted before the cycled element.
+
+            //The elements being cycled though are already ordered so if a unit, x, has a higher column number then the second element in     
+            //the output array it also has a higher column number than the third element.
+            //That means that if we go through the array and compare unit x to each element of the array, the first unit that has a column less
+            //than unit x will be the unit that unit x needs to be to the left of.
             outputArray.splice(elementIdx,0,unit)
-            thing = false
+            addLater = false
             break
           }
         }
-        if (thing) {
+        //If the column of the unit is not greater then the rest of the units then it should be behind the other units
+        if (addLater) {
           outputArray.push(unit)
         }
       }
     }
+    //Since the sorted array is just by highest to least column number, if we want it to be sorted by proximity to the center we need to  reverse  
+    //the array if the units are past the center which is only true for player 2
     if (this.number == 2) {
       outputArray.reverse()
     }
+
     this.units = outputArray
     return outputArray
   }

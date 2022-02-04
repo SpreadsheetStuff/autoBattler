@@ -23,28 +23,6 @@ class UnitType {
       this.ability.effect(this)
     }
   }
-  /**
-   * ---
-   * Checks if you are able to buy a unit, then either creates that unit or gives the user an alert that they can't buy the unit.
-   * @param {Player} player The player buying the unit
-   * @param {boolean} refundOnly Whether this should create any units or just return whether it can buy a unit
-   * @param {SpreadsheetApp.Range} selectedCell The cell the user is selecting
-   * @returns {number} whether a unit can be placed in the selected cell
-   */
-  buyFunction(player, refundOnly, selectedCell) {
-    if (selectionValid(selectedCell) == false) {
-      ui.alert("Invalid Location","Select a cell to place a unit there",ui.ButtonSet.OK)
-      return 1
-    } else {
-      var refund = 0
-    }
-    const sColumn = getFieldColumn(player.number, selectedCell.getColumn())
-
-    if (refundOnly == false) {
-      player.createUnit(this, sColumn)
-    }
-    return refund
-  }
 
   /**
    * Returns the text this UnitType has inside the shop's ui
