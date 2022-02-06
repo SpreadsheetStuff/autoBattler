@@ -144,8 +144,7 @@ class Unit {
         }
       }
     }
-    // game.players[this.player.number % 2] returns the other player because 1 % 2 = 1 which is the second element of a list and 2%2 returns 0
-    for (let unit of game.players[this.player.number % 2].units) {
+    for (let unit of ((this.player.number == 1)? game.players[1]: game.players[0]).units) {
       if (unit.ability.when == "onOpponentAttack") {
         if (!unit.ability.effect(this, unit)) {
           targets = []
@@ -222,7 +221,7 @@ class Unit {
       this.ability.effect(this)
     }
 
-    let enemyUnit = game.players[this.player.number % 2].units[0]
+    let enemyUnit = ((this.player.number == 1)? game.players[1]: game.players[0]).units[0]
     if (enemyUnit){
       if (enemyUnit.ability.when == "onKO") {
         enemyUnit.ability.effect(enemyUnit, this)

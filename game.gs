@@ -78,7 +78,7 @@ class Game  {
       if (p1FirstUnit.speed > p2FirstUnit.speed) {
         for (let unit of firstUnits) {
           if (unit.health > 0) {
-            let player = this.players[unit.player.number % 2]
+            let player = (unit.player.number == 1)? this.players[1]: this.players[0]
             for (let enemyUnit of unit.attack(player.units, false)) {
               enemyUnit.update()
             }
@@ -88,7 +88,7 @@ class Game  {
       } else if (p2FirstUnit.speed > p1FirstUnit.speed) {
         for (let unit of firstUnits.reverse()) {
           if (unit.health > 0) {
-            let player = this.players[unit.player.number % 2]
+            let player = (unit.player.number == 1)? this.players[1]: this.players[0]
             for (let enemyUnit of unit.attack(player.units, false)) {
               enemyUnit.update()
             }
@@ -98,7 +98,7 @@ class Game  {
       } else {
         let targets = []
         for (let unit of firstUnits) {
-          let player = this.players[unit.player.number % 2]
+          let player = (unit.player.number == 1)? game.players[1]: game.players[0]
           targets.push(unit.attack(player.units, true))
         }
         for (let i in targets) {
@@ -209,7 +209,7 @@ function endTurn() {
   saveOrLoadPlayersReady(false)
   let player = findPlayer()
   player.ready = true
-  let otherPlayer = game.players[player.number % 2]
+  let otherPlayer = (player.number == 1)? game.players[1]: game.players[0]
   if (otherPlayer.ready == false) {
     saveOrLoadPlayersReady(true)
     ui.alert("Turn Ended", "However, Player " + otherPlayer.number + " still needs to end their turn!", ui.ButtonSet.OK)

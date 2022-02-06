@@ -109,7 +109,7 @@ function strengthDebuffOnDeathEffectS1(unitType) {
   return unitType
 }
 function strengthDebuffOnDeathEffectS2(unit) {
-  var units = game.players[unit.player.number % 2].units
+  var units = ((unit.player.number == 1)? game.players[1]: game.players[0]).units
   for (let unit of units) {
     unit.buff("damage", -unit.damage/4)
   }
@@ -119,7 +119,7 @@ function disableDebuff() {
   return true
 }
 function debuffOnOutspedEffect(unit) {
-  var otherUnit = game.players[unit.player.number % 2].units[0]
+  var otherUnit = ((unit.player.number == 1)? game.players[1]: game.players[0]).units[0]
   if (unit.speed >= otherUnit.speed) {
     return
   }
@@ -157,7 +157,7 @@ function stealStatsOnKOEffect (unit, target) {
 }
 function annoyingThingEffect(unit) {
   let player = unit.player
-  let otherPlayer = game.players[player.number % 2]
+  let otherPlayer = (player.number == 1)? game.players[1]: game.players[0]
   let otherUnit = otherPlayer.findUnit(5 - (unit.column - 1) % 5 + (5 * (otherPlayer.number - 1)))
   if (otherUnit) {
     var unit2 = Unit.constructFromArray(otherUnit.toArray())
@@ -256,10 +256,10 @@ function stealBuffsEffect (stat, amount, otherUnit, unit) {
 
 //Pool 2
 function stunOnDeathEffect (unit) {
-  if (game.players[unit.player.number % 2].units.length == 0) {
+  if (((unit.player.number == 1)? game.players[1]: game.players[0]).units.length == 0) {
     return
   }
-  var otherUnit = game.players[unit.player.number % 2].units[0]
+  var otherUnit = ((unit.player.number == 1)? game.players[1]: game.players[0]).units[0]
   let name = otherUnit.ability.id.toString() + "*" + otherUnit.range.toString()
 
   otherUnit.ability = stunned
@@ -313,7 +313,7 @@ function sniperEffect(unit, targets) {
   target2.health += Math.ceil(unit.damage/2)
 }
 function niceZombieEffect (unit) {
-  let opponent = game.players[unit.player.number % 2]
+  let opponent = (unit.player.number == 1)? game.players[1]: game.players[0]
   if (opponent.units.length == 0) {
     return
   }
@@ -344,7 +344,7 @@ function summonerEffect(unit) {
   if (player.units.length > 5) {
     return
   }
-  let opponent = game.players[unit.player.number % 2].units[0]
+  let opponent = ((unit.player.number == 1)? game.players[1]: game.players[0]).units[0]
   let newUnit = new Unit("you", 15, opponent.damage, opponent.speed, opponent.range, opponent.ability, column, player)
   if (newUnit.ability == summoner) {
     newUnit.ability = noAbility
@@ -410,7 +410,7 @@ function soulEaterEffect (unit, target) {
 }
 function soulReleaseEffect(unit) {
   let damage =  parseInt(unit.ability.name)
-  let otherUnit = game.players[unit.player.number % 2].units[0]
+  let otherUnit = ((unit.player.number == 1)? game.players[1]: game.players[0]).units[0]
   unit.ability = soulEater
   otherUnit.takeDamage(damage/2)
   unit.update("debuffed:(")
@@ -570,6 +570,7 @@ function freeSearchEffect(unit) {
 }
 function shieldEffect (enemy, unit) {
   let player = unit.player
+  enemy.update("yay")
   for (let otherUnit of player.units){
     if (otherUnit.ability == chargedBattery) {
       uncharge(otherUnit)
@@ -577,5 +578,6 @@ function shieldEffect (enemy, unit) {
     }
   }
   unit.takeDamage(enemy.damage)
+  field.getRange("A1").getValue()
   return false
 }

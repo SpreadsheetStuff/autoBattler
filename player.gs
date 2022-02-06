@@ -87,17 +87,14 @@ class Player {
     this.loadUnits()
     this.loadMoney()
     if (this.findUnit(getFieldColumn(this.number, cell.getColumn()))) {
-      ui.alert("there is already a unit there")
       return
     }
     // Checks that the user is trying to place a unit in a place that isn't where units are allowed to be
     if (selectionValid(cell) == false) {
-      ui.alert("Invalid Location","Select a cell to place a unit there",ui.ButtonSet.OK)
       return
     }
     // Checks that you can afford buying a unit
     if (this.availibleUnits == 0) {
-      ui.alert("You already have the max units for this round")
       return
     }
     this.createUnit(unitType, getFieldColumn(this.number, cell.getColumn()))
@@ -209,40 +206,52 @@ class Player {
     this.units = outputArray
     return outputArray
   }
-  //
+  /**
+   * Moves all units this player owns as far as possible towards the center.
+   */
   advanceAllUnits() {
+    //Moves each unit in order of their proximity to the center because then nohing that blocks each unit will move
     this.orderUnits()
     if (this.number == 1) {
-      for (var unit of this.units) {
+      for (let unit of this.units) {
         unit.moveTo(5)
       }
     } else {
-      for (var unit of this.units) {
+      for (let unit of this.units) {
         unit.moveTo(6)
       }
     }
   }
-  //
-  //Really just here for the move selected button
+  /**
+   * Advances all units towards a column till the avoid column is empty.
+   * Mostly useful for the `moveCustomFunction()`
+   * @param {number} column The column this should prioritize moving units to
+   * @param {number} avoid The column this should try to get units to get out of the way of
+   */
+  
   advanceAllUnitsOnceTo(column, avoid) {
     let firstUnit = this.findUnit(avoid)
     if (!firstUnit) {
       return
-    } else {
-      var failed = this.fancyMove(firstUnit, column)
     }
-    for (var unit of failed) {
+    //Moves each unit once; if it finds another unit blocking the unit then moves that blocking unit
+    //Afterwards this moves all the blocked units again
+    let failed = this.fancyMove(firstUnit, column)
+    for (let unit of failed) {
       if (unit.column > column) {
-        if (!unit.move("left")) {
-          failed.push(unit)
-        }
+        unit.move("left")
       } else {
-        if (!unit.move("right")) {
-          failed.push(unit)
-        }
+        unit.move("right")
       }
     } 
   }
+  /**
+   * Moves a unit once towards a column; if another unit is blocking it, this then moves that unit
+   * Returns a list of every unit that was blocked
+   * @param {Unit} unit The unit you want to move
+   * @param {number} column The column you want the unit to move to
+   * @returns {Array<Unit>} 
+   */
   fancyMove(unit, column) {
     let failed = []
     if (unit.column > column) {
@@ -259,48 +268,58 @@ class Player {
     return failed
   }
 
-  //persistent data 
+  /**
+   * Updates this players units array to match what `PropertiesService` has stored
+   */
   loadUnits() {
-    //reset units array
+    //Empties this player's units array
     this.units = []
+    //Array of each unit stored as an array
     let array = JSON.parse(properties.getProperty("player " + this.number + " units"))
+
     Logger.log(properties.getProperty("player " + this.number + " units") + "n: "+ this.number)
 
     if (array) {
-      //loading units
+      //Adding each unit to this player's units array
       for (let unit of array) {
         this.units.push(Unit.constructFromArray(unit))
       }
-      //reseting field to avoid weird de-sync bugs
+      //Reseting field to avoid weird de-sync bugs
       if (this.number == 1) {
         field.getRange("a1:e2").setValue("")
       } else {
         field.getRange("f1:j2").setValue("")
       }
-      //updating so the field isn't blank
+      //Updating so the field isn't blank
       for (let unit of this.units) {
         unit.update()
       }
-      //ordering units so update order makes sense
+      //Ordering units so update order makes sense
       this.orderUnits()
     }
   }
 
+  /**
+   * Saves what units this player owns, and their stats to `PropertiesService`
+   */
   saveUnits() {
-    var outputArray = []
-    for (let unit of this.units) {
-      var unitAsArray = unit.toArray()
-      outputArray.push(unitAsArray)
-    }
+    let outputArray = this.units.map(unit => unit.toArray())
+
     properties.setProperty("player " + this.number + " units", JSON.stringify(outputArray))
     Logger.log(properties.getProperty("player " + this.number + " units") + "saved n: "+ this.number)
   }
+  /**
+   * Updates this players money to match what `PropertiesService` has stored
+   */
   loadMoney () {
     if (!properties.getProperty("player"+this.number+" money")) {
       return
     }
     this.availibleUnits = parseInt(properties.getProperty("player"+this.number+" money"))
   }
+  /**
+   * Saves this players money to properties service
+   */
   saveMoney () {
     properties.setProperty("player"+this.number+" money", this.availibleUnits)
   }
