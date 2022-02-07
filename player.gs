@@ -239,9 +239,13 @@ class Player {
     let failed = this.fancyMove(firstUnit, column)
     for (let unit of failed) {
       if (unit.column > column) {
-        unit.move("left")
+        if (!unit.move("left")) {
+          failed.push(unit)
+        }
       } else {
-        unit.move("right")
+        if (!unit.move("right")) {
+          failed.push(unit)
+        }
       }
     } 
   }

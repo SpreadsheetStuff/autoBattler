@@ -1,4 +1,8 @@
 class Game  {
+  /**
+   * ---
+   * Creates a new instance of the player class
+   */
   constructor (players, shops) {
     this.players = players
     this.round = 1

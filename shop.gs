@@ -52,8 +52,8 @@ class Shop {
     //Checks whether this is p1's shop, and either generates the shop or copies p1's shop to prevent different shops
     if (this.playerNum == 1){
       // Sets total stats to 30 so that later it can decrease them
-      let extraStats = 15
-      
+      //let extraStats = 15
+      let extraStats = 10
       for (let i = 0; i < 5; i++) {
         // Generates a random number as the index of all abilities then checks that there are no repeated abilities
         let ability = this.abilityPool[Math.floor(Math.random() * this.abilityPool.length)]
@@ -70,7 +70,7 @@ class Shop {
         let leftover = Math.round(15 + extraStats - stats2.reduce((a, b) => a + b))
   
         this.unitTypes.push(new UnitType(stats2[0], stats2[1], stats2[2] + leftover, stats2[3], ability))
-        extraStats -= 2.5
+        //extraStats -= 2.5
       }
     } else {
       //Copies p1's shop

@@ -38,27 +38,17 @@ class Ability {
   //20
   let doubleStats = new Ability("big boi", "stats", doubleStatsEffect, "Has 2x the strength and health it normally would have.", 20)
   let vampire = new Ability("vampire", "onHurt", vampireEffect, "When hurt, get back 1/2 of the health you lost (rounded down) then become a bat.", 21)
-  let soulEater = new Ability ("soul eater?", "onKO", soulEaterEffect, "After KOing a unit, gain their soul. Then release that soul, dealing half the strength of the KO'ed enemy to the closest enemy.", 22)
+  let soulEater = new Ability ("soul eater?", "onKO", soulEaterEffect, "After KOing a unit, gain their soul. Then release that soul, dealing the strength of the KO'ed enemy to the farthest enemy.", 22)
   let buy1Get1Free = new Ability("buy one get 2", "onBuy", buy1Get1FreeEffect, "When bought, lets you buy another unit.", 23)
-  let disableAbilities = new Ability("no more abilities", "onAttack", disableAbilitesEffect, "When you attack, the closest unit loses its ability.", 24)
+  let berserker = new Ability("berserker", "onTurnEnd", berserkerEffect, "At the end of each turn, converts all but 1 of this units health into strength.", 24)
   //25
-  let berserker = new Ability("berserker", "onTurnEnd", berserkerEffect, "At the end of each turn, converts all but 1 of this units health into strength.", 25)
-  let dejaVu = new Ability("deja vu", "onDeath", dejaVuEffect, "On death, pass on this ability and this units strength to the unit behind this.", 26)
-  //Pool 3
-  let basicBattery = new Ability("Basic Battery", "onBuy", charge, "When bought, becomes charged and can be used to power up other units.", 27)
-  let chainingBattery = new Ability("Chaining Battery", "onBatteryCharge", charge, "When another battery is charged, this unit becomes charged.", 28)
-  let laser = new Ability("Laser", "onAttack", laserEffect, "Before attacking, if possible, uncharges a charged battery and damages all enemy units for  that batteries strength stat.", 29)
-  let magicSciFiThing = new Ability("Magic Sci-Fi Thing", "onBatteryCharge", magicThingEffect, "When a battery charges, gain +2 range.", 30)
-  let freeBatteries = new Ability("Battery Pack", "onSell", freeBatteriesEffect, "On deletion, fills your entire shop with basic bateries that have this units stats and lets you buy an extra unit.", 31)
-  let generatePool3Only = new Ability("Hackerman", "onBattleEnd", generatePool3OnlyEffect, "At the start of your next turn, both shops only generate untis from pool 3 and this unit dies.", 32)
-  let freeSearch = new Ability("Free Search", "onBatteryCharge", freeSearchEffect, "When a battery is charged this unit's ability is replaced by an ability of your choice'", 33)
-  let shield = new Ability("Shield", "onOpponentAttack", shieldEffect, "When an opponent attacks a unit, this unit negates that damage and either uncharges a battery or takes that damage.", 34)
+  let shield = new Ability("Shield", "onOpponentAttack", shieldEffect, "When an opponent attacks a unit, this unit negates that damage and either uncharges a battery or takes that damage.", 25)
 
   //Different shop pools so that if, in the future I want to only use some shops I can
   var shopPool1 = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs]
-  var shopPool2 = [stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu]
-  var shopPool3 = [basicBattery, chainingBattery, magicSciFiThing, laser, freeBatteries, generatePool3Only, freeSearch, shield]
-  var shopPoolAll = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, disableAbilities, berserker, dejaVu, basicBattery, chainingBattery, laser, magicSciFiThing, freeBatteries, generatePool3Only, freeSearch, shield]
+  var shopPool2 = [stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, berserker, shield]
+  var shopPool3 = []
+  var shopPoolAll = [speedBuffOnBuy, strengthDebuffOnDeathS1, debuffImmunity, debuffOnOutsped, copyStatsFromBehind, stealStatsOnKO, annoyingThing, healthBuffAllOnTurnEnd, reactivateOnBuysOnSell, yoinkRangeOnBuy, extraBuffs, generalBuffs, stealBuffs, stunOnDeath, zombie, sniper, niceZombie, freeStrength, summoner, offensiveBuffer, doubleStats, vampire, soulEater, buy1Get1Free, berserker, shield]
 
   //Other Abilities 
   var noAbility = new Ability ("Already Sold","never", doNothing, "does nothing", shopPoolAll.length)
@@ -66,9 +56,7 @@ class Ability {
   let stunned = new Ability("stunned :(", "onHurt", stunnedEffect, "Stunned: has a range of 0 until hit.", shopPoolAll.length + 2)
   let doubleStatsFake = new Ability("big boi", "never", doNothing, "has 2x the stats it normally would have", shopPoolAll.length + 3)
   let bat = new Ability("bat", "onHurt", batEffect, "When damaged deal 1/2 the damage you took to all units then become a vampire.", shopPoolAll.length + 4)
-  let soulRelease = new Ability ("soul eater?", "onAttack", soulReleaseEffect, "Before attacking deal half the strength of the last enemy you KO'ed to your opponents first unit \n\n\n\n\n buffed:) ", shopPoolAll.length + 5)
-  let chargedBattery = new Ability ("battery", "never", doNothing, "Used to power up certain units. (When uncharged in battle, is also uncharged out of battle).", shopPoolAll.length + 6)
-  let unchargedBattery = new Ability ("uncharged battery", "onSell", chargeOtherBattery, "When deleted, re-charges the left-most uncharged battery", shopPoolAll.length + 7)
+  let soulRelease = new Ability ("soul eater?", "onAttack", soulReleaseEffect, "Before attacking deal the strength of the last enemy you KO'ed to your opponents last unit \n\n\n\n\n buffed:) ", shopPoolAll.length + 5)
 let otherAbilities = [noAbility, strengthDebuffOnDeathS2, stunned, doubleStatsFake, bat, soulRelease, chargedBattery, unchargedBattery]
 let abilities = shopPoolAll.concat(otherAbilities)
 
@@ -410,164 +398,27 @@ function soulEaterEffect (unit, target) {
 }
 function soulReleaseEffect(unit) {
   let damage =  parseInt(unit.ability.name)
-  let otherUnit = ((unit.player.number == 1)? game.players[1]: game.players[0]).units[0]
+  let otherUnits = ((unit.player.number == 1)? game.players[1]: game.players[0]).units
+  let otherUnit = otherUnits[otherUnits.length - 1]
+
   unit.ability = soulEater
-  otherUnit.takeDamage(damage/2)
+  otherUnit.takeDamage(damage)
+
   unit.update("debuffed:(")
   field.getRange("a1").getValue()
   Stopwatch.sleep(0.25)
+  otherUnit.update()
 }
-
 function buy1Get1FreeEffect(unit) {
   unit.player.availibleUnits += 1
 }
-function disableAbilitesEffect(unit, targets) {
-  targets[0].ability = noAbility
-}
-
-
-
-//Id:25
 function berserkerEffect(unit) {
   let health = unit.health - 1
   unit.buff("health", - health)
   unit.buff("damage", health)
 }
-function dejaVuEffect(unit) {
-  let units = unit.player.units
-  if (units.length < 2) {
-    return
-  }
-  let unitBehind = units[1]
-  unitBehind.name = "deja vu"
-  unitBehind.damage = unit.damage
-  unitBehind.ability = dejaVu
-  //unit.player.units[1] = unitBehind
-  field.getRange("a1").getValue()
-}
 
-
-
-//Pool 3
-function charge(unit) {
-  unit.ability = chargedBattery
-  unit.name = "Charged Battery"
-  unit.update()
-  for (let otherUnit of unit.player.units) {
-    if (otherUnit.ability.when == "onBatteryCharge" && otherUnit != unit) {
-      otherUnit.ability.effect(otherUnit, unit)
-    }
-  }
-}
-function uncharge(unit) {
-  unit.ability = unchargedBattery
-  unit.name = "Uncharged Battery"
-  unit.update()
-  for (let otherUnit of unit.player.units) {
-    if (otherUnit.ability.when == "onBatteryDischarge" && otherUnit != unit) {
-      otherUnit.ability.effect(otherUnit, unit)
-    }
-  }
-  if (!game.inBattle) {
-    return
-  }
-  let savedData = JSON.parse(properties.getProperty("player " + unit.player.number + " units"))
-  let column = game.unitColumnsForBattle.indexOf(unit)
-  Logger.log(savedData)
-  Logger.log(column)
-  for (let unitArray of savedData) {
-    if (unitArray[5] == column) {
-      Logger.log("yay")
-      unitArray[7] = shopPoolAll.length + 7
-      unitArray[0] = "Uncharged Battery"
-    }
-  }
-  Logger.log(savedData)
-  properties.setProperty("player " + unit.player.number + " units", JSON.stringify(savedData))
-}
-function chargeOtherBattery(unit) {
-  let player = unit.player
-  for (let otherUnit of player.units){
-    if (otherUnit.ability == unchargedBattery && otherUnit != unit) {
-      charge(otherUnit)
-      otherUnit.update("buffed:)")
-      return
-    }
-  }
-}
-function laserEffect(unit, targets) {
-  let player = unit.player
-  for (let otherUnit of player.units){
-    if (otherUnit.ability == chargedBattery) {
-      unit.update("yay")
-      field.getRange("a1").getValue()
-      let damage = otherUnit.damage
-      for (let enemy of targets[0].player.units){
-        enemy.takeDamage(damage)
-      }
-      uncharge(otherUnit)
-      field.getRange(1, otherUnit.column, 2).setValue("")
-      player.advanceAllUnits()
-      return
-    }
-  }
-}
-
-
-//Id: 30
-function magicThingEffect(unit) {
-  unit.buff("range", 2)
-  field.getRange("a1").getValue()
-}
-function freeBatteriesEffect(unit) {
-  loadPlayerMoney()
-  unit.player.availibleUnits += 1
-  savePlayerMoney()
-  let newUnitType = new UnitType(unit.health, unit.damage, unit.speed, unit.range, basicBattery)
-  let shop = unit.player.shop
-  shop.load()
-  shop.unitTypes = []
-  for (let i = 0; i < 5; i++) {
-    shop.unitTypes.push(newUnitType)
-  }
-  shop.save()
-  shop.draw()
-}
-
-function generatePool3OnlyEffect (unit) {
-  let shop1 = game.players[0].shop
-  shop1.abilityPool = shopPool3
-  shop1.generateShop()
-  game.players[1].shop.generateShop()
-  unit.die()
-}
-function freeSearchEffect(unit) {
-  let whatUnit = ui.prompt("Name a units ability", "(Caps sensitive)", ui.ButtonSet.OK).getResponseText()
-  let responseMatches = false
-  while (!responseMatches) {
-    for (var type of shopPoolAll) {
-      if (type.name == whatUnit.toString()) {
-        responseMatches = true
-        break
-      }
-    }
-    if (responseMatches) {
-      break
-    }
-    whatUnit = ui.prompt("Invalid name", "Name another units ability", ui.ButtonSet.OK).getResponseText()
-  }
-  unit.ability = type
-  unit.name = whatUnit
-  if (unit.ability.when == "stats") {
-    let type = new UnitType(unit.health, unit.damage, unit.speed, unit.range, unit.ability)
-    let idx = unit.player.units.indexOf(unit)
-    unit = Unit.constructFromType(type, unit.column, unit.player)
-    player.units[idx] = unit
-  } else if (unit.ability.when == "onBatteryCharge") {
-    unit.ability.effect(unit)
-  }
-  unit.update()
-}
+//Id: 25
 function shieldEffect (enemy, unit) {
   let player = unit.player
   enemy.update("yay")
