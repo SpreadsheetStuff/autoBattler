@@ -1,2 +1,2 @@
 # autoBattler
-auto battler in google spreadsheets
+auto battler game in google spreadsheets
