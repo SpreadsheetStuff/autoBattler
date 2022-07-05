@@ -122,13 +122,9 @@ function player2TurnBot () {
 
     //Sets an initial unit to compare the other shop units to
     let biggestUnit = player2.shop.unitTypes[0]
-    //Checks to make sure it isn't a unit with the free search ability because I haven't figure out how to make that ability work with a bot
-    if (biggestUnit.ability == freeSearch) {
-      biggestUnit = player2.shop.unitTypes[1]
-    } 
     // Cycles through each unit in the shop and compares them to the initial unit
     for (const unitType of player2.shop.unitTypes) {
-      if (unitType.baseAttack > biggestUnit.baseAttack && unitType.ability != freeSearch) {
+      if (unitType.baseAttack > biggestUnit.baseAttack) {
         biggestUnit = unitType
       }
     }

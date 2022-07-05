@@ -144,9 +144,9 @@ class Unit {
         }
       }
     }
-    for (let unit of ((this.player.number == 1)? game.players[1]: game.players[0]).units) {
+    for (let unit of game.players[2 - this.player.number].units) {
       if (unit.ability.when == "onOpponentAttack") {
-        if (!unit.ability.effect(this, unit)) {
+        if (!unit.ability.effect(this, unit, targets)) {
           targets = []
         }
       }
@@ -221,7 +221,7 @@ class Unit {
       this.ability.effect(this)
     }
 
-    let enemyUnit = ((this.player.number == 1)? game.players[1]: game.players[0]).units[0]
+    let enemyUnit = game.players[2 - this.player.number].units[0]
     if (enemyUnit){
       if (enemyUnit.ability.when == "onKO") {
         enemyUnit.ability.effect(enemyUnit, this)

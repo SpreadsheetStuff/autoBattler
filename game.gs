@@ -4,6 +4,9 @@ class Game  {
    * Creates a new instance of the player class
    */
   constructor (players, shops) {
+    /**
+     * @type Array<Player>
+     */
     this.players = players
     this.round = 1
     if (!properties.getProperty("round number")) {
@@ -82,7 +85,7 @@ class Game  {
       if (p1FirstUnit.speed > p2FirstUnit.speed) {
         for (let unit of firstUnits) {
           if (unit.health > 0) {
-            let player = (unit.player.number == 1)? this.players[1]: this.players[0]
+            let player = this.players[2 - unit.player.number]
             for (let enemyUnit of unit.attack(player.units, false)) {
               enemyUnit.update()
             }
@@ -92,7 +95,7 @@ class Game  {
       } else if (p2FirstUnit.speed > p1FirstUnit.speed) {
         for (let unit of firstUnits.reverse()) {
           if (unit.health > 0) {
-            let player = (unit.player.number == 1)? this.players[1]: this.players[0]
+            let player = this.players[2 - unit.player.number]
             for (let enemyUnit of unit.attack(player.units, false)) {
               enemyUnit.update()
             }
@@ -102,7 +105,7 @@ class Game  {
       } else {
         let targets = []
         for (let unit of firstUnits) {
-          let player = (unit.player.number == 1)? game.players[1]: game.players[0]
+          let player = this.players[2 - unit.player.number]
           targets.push(unit.attack(player.units, true))
         }
         for (let i in targets) {
@@ -213,7 +216,7 @@ function endTurn() {
   saveOrLoadPlayersReady(false)
   let player = findPlayer()
   player.ready = true
-  let otherPlayer = (player.number == 1)? game.players[1]: game.players[0]
+  let otherPlayer = game.players[2 - player.number]
   if (otherPlayer.ready == false) {
     saveOrLoadPlayersReady(true)
     ui.alert("Turn Ended", "However, Player " + otherPlayer.number + " still needs to end their turn!", ui.ButtonSet.OK)
